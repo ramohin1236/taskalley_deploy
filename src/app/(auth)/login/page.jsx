@@ -1,5 +1,5 @@
 import registration_img from "../../../../public/login_page_image.png";
-import main_logo from "../../../../public/main_logo.svg";
+import main_logo from "../../../../public/main_logo_svg.svg";
 import React from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
@@ -28,7 +28,9 @@ const Login = () => {
               <div className=" flex flex-col items-center justify-center py-6 ">
                 <div className="w-full">
                   <div className="p-6 sm:p-8 ">
-                    <Image src={main_logo} alt="main_logo" />
+                   <div className="flex justify-center items-center mb-12">
+                     <Image src={main_logo} alt="main_logo" className="w-44"/>
+                   </div>
                     <h1 className="text-[#394352] text-3xl font-semibold my-4">
                       Login to Account
                     </h1>
