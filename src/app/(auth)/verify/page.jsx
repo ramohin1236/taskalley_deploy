@@ -91,7 +91,7 @@ const VerifyReg = () => {
                       </label>
 
                       <div className="mt-4 flex rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
-                        <Link href="referalcode" className="bg-[#115E59] text-center w-full py-2 text-white cursor-pointer ">
+                        <Link href="id_card_verify" className="bg-[#115E59] text-center w-full py-2 text-white cursor-pointer ">
                           Verify
                         </Link>
                       </div>
