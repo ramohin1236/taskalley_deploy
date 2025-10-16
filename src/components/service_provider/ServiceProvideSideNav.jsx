@@ -24,7 +24,7 @@ const sidebarLinks = [
     href: "/service_security",
     icon: <IoIosSettings />,
   },
-  { name: "Refer & Discounts", href: "/service_discount", icon: <TbDiscount /> },
+  { name: "Referrals & Discounts", href: "/service_discount", icon: <TbDiscount /> },
   { name: "Home", href: "/", icon: <FaHome /> },
 ];
 

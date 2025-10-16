@@ -80,7 +80,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </button>
         <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
-          Refer & Discounts
+          Referrals & Discounts
         </h1>
       </div>
 
