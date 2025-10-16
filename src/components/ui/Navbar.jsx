@@ -71,7 +71,10 @@ const Navbar = () => {
 
   const taskProviderLinks = (
     <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6">
-      <Link href="/post_task" className={getLinkClass("/post_task", true)}>
+      <Link 
+        href="/post_task" 
+        className={getLinkClass("/post_task")}
+      >
         Post A Task
       </Link>
       <Link href="/browseservice" className={getLinkClass("/browseservice")}>
@@ -80,7 +83,7 @@ const Navbar = () => {
       <Link href="/service-listing" className={getLinkClass("/service-listing")}>
         Browse Services
       </Link>
-      <Link href="/login" className={getLinkClass("/list-service")}>
+      <Link href="/list_my_service" className={getLinkClass("/list_my_service")}>
         List A Service
       </Link>
     </div>
@@ -88,7 +91,7 @@ const Navbar = () => {
 
   const serviceProviderLinks = (
     <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6">
-      <Link href="/browseservice" className={getLinkClass("/service_task_status", true)}>
+      <Link href="/browseservice" className={getLinkClass("/browseservice")}>
         Browse Tasks
       </Link>
       <Link href="/list_my_service" className={getLinkClass("/list_my_service")}>
