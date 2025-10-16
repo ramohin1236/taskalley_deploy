@@ -9,6 +9,7 @@ import Completed from "@/components/my_tasks/Completed";
 import Cancelled from "@/components/my_tasks/Cancelled";
 import { Handshake } from "lucide-react";
 import Link from "next/link";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 const TaskDetails = () => {
   const status = ["Bids", "Progress", "Completed", "Cancelled"];
@@ -19,17 +20,14 @@ const TaskDetails = () => {
     <div className="project_container mx-auto px-3 py-6 md:p-6">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
-        <div className="flex items-center gap-4 ">
-          <Image
-            src={popularcateIcon}
-            alt="Popular Category"
-            height={24}
-            width={24}
-          />
-          <p className="font-semibold text-md md:text-xl text-color pb-3">
-            My Tasks
+        <Link
+        href="/my_task"
+        className="flex items-center gap-4 ">
+          <FaArrowLeftLong className="text-color text-xl font-bold"/>
+          <p className="font-semibold text-md md:text-xl text-color">
+            Back To My Tasks
           </p>
-        </div>
+        </Link>
       
         <div>
           {currentStatus === "Progress" && (
