@@ -91,15 +91,16 @@ const Navbar = () => {
 
   const serviceProviderLinks = (
     <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6">
+      <Link href="/post_task" className={getLinkClass("/post_task")}>
+        Post A Task
+      </Link>
       <Link href="/browseservice" className={getLinkClass("/browseservice")}>
         Browse Tasks
       </Link>
       <Link href="/list_my_service" className={getLinkClass("/list_my_service")}>
-        My Service
+        My Services
       </Link>
-      <Link href="/post_task" className={getLinkClass("/post_task")}>
-        Post A Task
-      </Link>
+      
     </div>
   );
 
