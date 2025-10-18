@@ -28,9 +28,11 @@ const Register = () => {
               <div className=" flex flex-col items-center justify-center py-2 ">
                 <div className="w-full">
                   <div className="p-6 sm:p-8 ">
-                     <div className="flex justify-center items-center mb-12">
+                     <Link 
+                     href="/"
+                     className="flex justify-center items-center mb-12">
                                          <Image src={main_logo} alt="main_logo" className="w-44"/>
-                                       </div>
+                                       </Link>
                      <h1 className="text-[#394352] text-3xl font-semibold my-4">
                       Create Your Account
                     </h1>
