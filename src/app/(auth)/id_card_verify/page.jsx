@@ -41,7 +41,7 @@ const IdCardVerification = () => {
                         <div className="relative flex items-center">
                           <select
                             defaultValue="Pick a color"
-                            className="select w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600"
+                            className="select w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600 bg-white"
                           >
                             <option disabled={true}>Select One</option>
                             <option>
