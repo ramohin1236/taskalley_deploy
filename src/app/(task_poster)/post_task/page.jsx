@@ -49,10 +49,10 @@ const handlePrevious = () => {
   setCurrentStep((prev) => Math.max(prev - 1, 0));
 };
 
-//   const handleSubmit = () => {
-//     console.log("Form submitted:", formData);
-//     alert("Task created successfully!");
-//   };
+  const handleSubmit = () => {
+    console.log("Form submitted:", formData);
+    alert("Task created successfully!");
+  };
 
   
   useEffect(() => {
@@ -113,6 +113,7 @@ useEffect(() => {
               <textarea
                 rows={4}
                 value={formData.taskDescription}
+
                 onChange={(e) => handleInputChange("taskDescription", e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-800 resize-none"
               />
@@ -148,6 +149,7 @@ useEffect(() => {
                 label="Where to Go"
                 placeholder="e.g. 123 Main Avenue"
                 value={formData.location}
+
                 onChange={(e) => handleInputChange("location", e.target.value)}
               />
             )}
@@ -167,6 +169,7 @@ useEffect(() => {
                   type="date"
                   label="Preferred Date"
                   value={formData.preferredDate}
+  
                   onChange={(e) => handleInputChange("preferredDate", e.target.value)}
                 />
                 <FormSelect
@@ -177,6 +180,7 @@ useEffect(() => {
                     "Evening (6PM - 10PM)",
                   ]}
                   value={formData.preferredTime}
+  
                   onChange={(e) => handleInputChange("preferredTime", e.target.value)}
                   placeholder="Select time"
                 />
@@ -199,6 +203,7 @@ useEffect(() => {
                   type="number"
                   placeholder="1,500"
                   value={formData.budget}
+  
                   onChange={(e) => handleInputChange("budget", e.target.value)}
                   className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-800"
                 />
@@ -208,6 +213,7 @@ useEffect(() => {
               <input
                 type="checkbox"
                 checked={formData.agreedToTerms}
+
                 onChange={(e) => handleInputChange("agreedToTerms", e.target.checked)}
               />
               <p className="text-sm text-gray-600">
@@ -231,6 +237,7 @@ useEffect(() => {
         currentStep={currentStep}
         totalSteps={steps.length}
         finalLabel="Post Task"
+        handleSubmit={handleSubmit}
       />
     </MultiStepForm>
   );

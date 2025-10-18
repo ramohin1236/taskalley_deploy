@@ -5,6 +5,7 @@ const FormNavigation = ({
   onNext, 
   currentStep, 
   totalSteps,
+  handleSubmit,
   previousLabel = "Previous",
   nextLabel = "Next",
   finalLabel = "Submit",
@@ -13,6 +14,7 @@ const FormNavigation = ({
 }) => (
   <div className={`flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-gray-200 ${className}`}>
     <button
+
       onClick={onPrevious}
       disabled={currentStep === 0 || disablePrevious}
       className={`
@@ -27,7 +29,8 @@ const FormNavigation = ({
     </button>
 
     <button
-      onClick={onNext}
+      // onClick={onNext}
+      onClick={handleSubmit}
       className="bg-[#115E59] hover:bg-teal-700 text-white px-6 py-2 rounded-lg font-medium transition-colors w-full sm:w-auto order-1 sm:order-2 cursor-pointer"
     >
       {currentStep === totalSteps - 1 ? finalLabel : nextLabel}
