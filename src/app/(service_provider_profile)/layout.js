@@ -51,7 +51,7 @@ const ServiceProviderProfileLayout = ({ children }) => {
                 p-3 rounded-xl shadow-lg hover:shadow-xl
                 transition-all duration-300 ease-in-out
                 transform hover:scale-105 active:scale-95
-                border border-gray-200
+                border border-gray-200 mt-20
               `}
               aria-label={open ? "Close menu" : "Open menu"}
             >

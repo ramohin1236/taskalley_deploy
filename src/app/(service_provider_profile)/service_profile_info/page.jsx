@@ -7,7 +7,7 @@ import Link from "next/link";
 const ServiceProfileInfo = () => {
   return (
     <div className="min-h-screen bg-gray-50 lg:bg-transparent">
-      <div className="max-w-7xl mx-auto lg:px-8 py-4 lg:py-6">
+      <div className="max-w-7xl mx-auto lg:px-8 py-4 lg:py-6 mt-12">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6 lg:mb-8">
           <Link href='/' className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:p-0 lg:hover:bg-transparent">

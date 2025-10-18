@@ -37,7 +37,7 @@ const ServiceProvideSideNav = ({ open, onClose }) => {
     
     return isActive
       ? "group px-3 py-4 flex items-center gap-3 rounded-lg bg-[#115E59] text-white font-semibold transition w-64 shadow-md"
-      : "group px-3 py-4 flex items-center gap-3 rounded-lg border border-[#b8d3cd] text-[#115E59] font-medium hover:bg-[#115E59] hover:text-white transition w-64";
+      : "group px-3 py-4 flex items-center gap-3 rounded-lg border border-[#b8d3cd] text-[#115E59] font-medium hover:bg-[#115E59] hover:text-white transition w-64 ";
   };
 
   // Function to get icon color based on active state
@@ -49,6 +49,7 @@ const ServiceProvideSideNav = ({ open, onClose }) => {
   return (
     <div
       className={`fixed md:relative top-0 left-0 min-h-full rounded-l-lg bg-[#E6F4F1] shadow-lg z-40 transform transition-transform duration-300
+        mt-20 md:mt-16 lg:mt-0
                ${
                  open ? "translate-x-0" : "-translate-x-full"
                } md:translate-x-0`}
