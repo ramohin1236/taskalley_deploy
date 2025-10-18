@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { BarChart3 } from "lucide-react";
+import { ArrowLeft, BarChart3 } from "lucide-react";
 import TransactionFilterTabs from "./TransactionFilterTabs";
 import DateNavigation from "./DateNavigation";
 import TransactionTable from "./TransactionTable";
+import Link from "next/link";
 
 const sampleTransactions = [
   {
@@ -126,12 +127,15 @@ const TransactionHistory = () => {
 
  const transactions = getTransactions();
   return (
-    <div className="max-w-7xl mx-auto p-4 lg:p-6">
+    <div className=" mx-auto p-4 lg:p-6">
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
-          <BarChart3 className="w-5 h-5 text-[#115e59]" />
-        </div>
+        <Link 
+        href="/notifications"
+        className="w-8 h-8  rounded-lg flex items-center justify-center">
+          <ArrowLeft className="w-5 h-5 text-gray-600 cursor-pointer" />
+        </Link>
         <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
           My Transaction History
         </h1>

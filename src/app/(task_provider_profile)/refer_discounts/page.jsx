@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ArrowLeft, Copy, Share, Check } from "lucide-react";
+import Link from "next/link";
 
 const ReferDiscounts = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState("my-discounts");
@@ -73,12 +74,12 @@ const ReferDiscounts = ({ onBack }) => {
     <div className="bg-white p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={onBack}
+        <Link
+          href="/security_settings"
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
-        </button>
+        </Link>
         <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
           Referrals & Discounts
         </h1>

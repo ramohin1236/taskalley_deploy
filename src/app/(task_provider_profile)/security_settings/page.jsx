@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 const ChangePassword = ({ onBack }) => {
   const [formData, setFormData] = useState({
@@ -145,12 +146,12 @@ const ChangePassword = ({ onBack }) => {
     <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
-        <button
-          onClick={onBack}
+        <Link
+         href="/transaction"
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-gray-600" />
-        </button>
+        </Link>
         <h1 className="text-lg md:text-xl font-semibold text-gray-900">
           Change Password
         </h1>
