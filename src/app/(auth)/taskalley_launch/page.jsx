@@ -18,6 +18,8 @@ import Link from "next/link";
 import { baseUrl } from "../../../../utils/baseUrl";
 import Swal from "sweetalert2";
 
+import { toast } from "sonner";
+
 const faqs = [
   {
     question: "Can I contact business owners directly ?",
@@ -142,30 +144,17 @@ const TaskAlleyLaunch = () => {
       });
 
       if (response.ok) {
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Thank You For Subscribed!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        toast.success("Thank you for subscribing!");
         setEmail("");
         setPhone("");
       } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
+        toast.error("Something went wrong! Please try again.");
       }
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        icon: "error",
-        title: "Server Error!",
-      });
+      toast.error("Server Error! Please try later.");
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -444,7 +433,7 @@ const TaskAlleyLaunch = () => {
               <button
                 type="submit"
                 className="bg-[#115e59] hover:bg-teal-800 text-white px-8 py-3 rounded-md font-medium cursor-pointer transition w-full sm:w-auto mx-auto sm:mx-0 shadow-md flex items-center justify-center gap-2"
-                disabled={loading} // Disable button when loading
+                disabled={loading}
               >
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
