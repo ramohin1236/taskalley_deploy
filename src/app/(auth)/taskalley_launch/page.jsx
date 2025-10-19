@@ -70,6 +70,7 @@ const TaskAlleyLaunch = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -124,6 +125,7 @@ const TaskAlleyLaunch = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const data = {
       email: email,
@@ -138,7 +140,7 @@ const TaskAlleyLaunch = () => {
         },
         body: JSON.stringify(data),
       });
-      console.log(response);
+
       if (response.ok) {
         Swal.fire({
           position: "top-end",
@@ -153,12 +155,17 @@ const TaskAlleyLaunch = () => {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Something went wrong!"
+          text: "Something went wrong!",
         });
       }
     } catch (error) {
       console.error(error);
-      alert("Server Error!");
+      Swal.fire({
+        icon: "error",
+        title: "Server Error!",
+      });
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -436,12 +443,14 @@ const TaskAlleyLaunch = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="bg-[#115e59] hover:bg-teal-800
-                 text-white px-8 py-3 rounded-md font-medium
-                 cursor-pointer
-                  transition w-full sm:w-auto mx-auto sm:mx-0 shadow-md"
+                className="bg-[#115e59] hover:bg-teal-800 text-white px-8 py-3 rounded-md font-medium cursor-pointer transition w-full sm:w-auto mx-auto sm:mx-0 shadow-md flex items-center justify-center gap-2"
+                disabled={loading} // Disable button when loading
               >
-                Submit
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  "Submit"
+                )}
               </button>
             </form>
 
