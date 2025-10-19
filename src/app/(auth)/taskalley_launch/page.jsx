@@ -150,7 +150,11 @@ const TaskAlleyLaunch = () => {
         setEmail("");
         setPhone("");
       } else {
-        alert("Something went wrong!");
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!"
+        });
       }
     } catch (error) {
       console.error(error);
@@ -163,7 +167,7 @@ const TaskAlleyLaunch = () => {
       {/* navbar */}
       <nav className="shadow-2xl py-3 ">
         <div className=" py-2  max-w-[1340px] px-10 mx-auto ">
-          <Image alt="main_logo" src={main_logo} className="h-12 w-40"/>
+          <Image alt="main_logo" src={main_logo} className="h-12 w-40" />
         </div>
       </nav>
       {/* navbar */}
@@ -454,7 +458,7 @@ const TaskAlleyLaunch = () => {
       <section className="bg-black py-4 mt-20">
         <div className="project_container px-6 flex flex-wrap items-center  justify-between">
           <div>
-            <Image src={main_logo} alt="main logg" className="h-16 w-40"/>
+            <Image src={main_logo} alt="main logg" className="h-16 w-40" />
           </div>
           <div className="text-white">Copyright 2025 TaskAlley.com</div>
           <div className="flex gap-2">
