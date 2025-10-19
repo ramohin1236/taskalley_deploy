@@ -1,9 +1,25 @@
+"use client";
 import registration_img from "../../../../public/login_page_image.png";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 const IdCardVerification = () => {
+  const [selectedDoc, setSelectedDoc] = useState("");
+  const getPlaceholder = () => {
+    switch (selectedDoc) {
+      case "National Identification Number (NIN)":
+        return "Enter your NIN number";
+      case "Voter’s Card":
+        return "Enter your Voter’s Card number";
+      case "International Passport":
+        return "Enter your Passport number";
+      case "Driver’s License":
+        return "Enter your Driver’s License number";
+      default:
+        return "Enter your ID number";
+    }
+  };
   return (
     <section>
       <div className="max-w-[1100px] mx-auto h-[1200px] flex items-center justify-center max-h-screen  ">
@@ -34,16 +50,18 @@ const IdCardVerification = () => {
                     </p>
                     {/* -------------------form------------------------------ */}
                     <form className="mt-12 space-y-6">
+                      {/* Select Document */}
                       <div>
                         <label className="text-[#1F2937] text-sm font-medium mb-2 block">
                           Select Identification Document
                         </label>
                         <div className="relative flex items-center">
                           <select
-                            defaultValue="Pick a color"
+                            value={selectedDoc}
+                            onChange={(e) => setSelectedDoc(e.target.value)}
                             className="select w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600 bg-white"
                           >
-                            <option disabled={true}>Select One</option>
+                            <option value="">Select One</option>
                             <option>
                               National Identification Number (NIN)
                             </option>
@@ -53,21 +71,29 @@ const IdCardVerification = () => {
                           </select>
                         </div>
                       </div>
+
+                      {/* Dynamic Input */}
                       <div>
                         <label className="text-[#1F2937] text-sm font-medium mb-2 block">
                           Enter ID Number
                         </label>
                         <div className="relative flex items-center">
                           <input
-                            name="address"
-                            type="address"
+                            name="idNumber"
+                            type="text"
                             required
-                            className="w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600"
-                            placeholder="Enter your NIN / Passport / Voter’s ID number"
+                            disabled={!selectedDoc}
+                            className={`w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600 transition ${
+                              !selectedDoc
+                                ? "bg-gray-100 cursor-not-allowed"
+                                : "bg-white"
+                            }`}
+                            placeholder={getPlaceholder()}
                           />
                         </div>
                       </div>
 
+                      {/* File Upload */}
                       <label className="bg-white text-slate-500 font-semibold text-base rounded max-w-md h-52 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 border-dashed mx-auto">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -90,10 +116,11 @@ const IdCardVerification = () => {
                           className="hidden"
                         />
                         <p className="text-xs font-medium text-slate-400 mt-2">
-                          PNG, JPG SVG, WEBP, and GIF are Allowed.
+                          PNG, JPG, SVG, WEBP, and GIF are allowed.
                         </p>
                       </label>
 
+                      {/* Next Button */}
                       <div className="mt-4 flex rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
                         <Link
                           href="referalcode"
