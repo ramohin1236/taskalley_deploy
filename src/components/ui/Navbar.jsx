@@ -14,7 +14,7 @@ import { PiSignOutBold } from "react-icons/pi";
 const Navbar = () => {
   const pathname = usePathname();
   // "service_provider", "guest", "task_provider"
-  const [role, setRole] = useState("task_provider");
+  const [role, setRole] = useState("guest");
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -22,21 +22,23 @@ const Navbar = () => {
   // Mobile profile toggle
   const [profileOpen, setProfileOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      setLastScrollY(window.scrollY);
-    };
+  // nav scroll animation remove
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     if (window.scrollY > lastScrollY) {
+  //       setIsVisible(false);
+  //     } else {
+  //       setIsVisible(true);
+  //     }
+  //     setLastScrollY(window.scrollY);
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, [lastScrollY]);
 
   // Enhanced link class function with active state handling
+ 
   const getLinkClass = (path, isButton = false) => {
     const isActive = pathname === path;
     
