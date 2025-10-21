@@ -86,7 +86,7 @@ const ServiceCategories = () => {
     },
   ];
   return (
-    <section className="project_container pl-4 pt-4 pb-28 pt-12">
+    <section className="project_container pl-4  pb-28 pt-12">
       <div className="mb-14">
         <Heading
           heading="Explore Service Categories"

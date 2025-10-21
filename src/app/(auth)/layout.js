@@ -1,17 +1,29 @@
+"use client";
 import React from "react";
 import "../globals.css";
 import { Toaster } from "sonner";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
+import { usePathname } from "next/navigation";
 
 const AuthLayout = ({ children }) => {
+  const pathname = usePathname();
+
+  
+  const hideLayout = pathname === "/taskalley_launch";
+
   return (
-    <html >
+    <html>
       <body>
-         <Toaster position="top-right" richColors />
-         <div><Navbar/></div>
-        <div >{children}</div>
-        <div><Footer/></div>
+        <Toaster position="top-right" richColors />
+
+        {/* Navbar conditionally show */}
+        {!hideLayout && <Navbar />}
+
+        <div>{children}</div>
+
+        {/* Footer conditionally show */}
+        {!hideLayout && <Footer />}
       </body>
     </html>
   );
