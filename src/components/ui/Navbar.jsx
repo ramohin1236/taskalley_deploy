@@ -44,12 +44,12 @@ const Navbar = () => {
     
     if (isButton) {
       return isActive
-        ? "px-4 py-2 bg-[#0d4a42] text-white rounded-md shadow-md"
+        ? "px-4 py-2 bg-[#115e59] text-white rounded-md shadow-md"
         : "px-4 py-2 bg-[#115e59] text-white rounded-md hover:bg-[#0d4a42] transition-colors";
     }
     
     return isActive
-      ? "text-[#115e59] font-semibold px-4 py-2 border-b-2 border-[#115e59]"
+      ? "font-semibold px-4 py-2 bg-[#115e59] text-white rounded-md shadow-md"
       : "text-gray-800 hover:text-[#115e59] px-4 py-2 hover:border-b-2 hover:border-[#115e59] transition-all";
   };
 
