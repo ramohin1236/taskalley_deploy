@@ -82,7 +82,7 @@ const page = () => {
         <div className="bg-[#e6f4f1] border border-[#c0d9d3] rounded-lg p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-[#115e59] font-medium mb-2">Total Earnings</p>
+              <p className="text-lg text-[#115e59] font-medium mb-2">Total Earnings</p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900">₦ 1285.66</h2>
             </div>
             <div className="bg-teal-100 p-3 rounded-lg">
@@ -106,7 +106,7 @@ const page = () => {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                className={`px-4 py-2 text-lg font-medium rounded-lg transition-colors ${
                   activeTab === tab
                     ? 'bg-[#115e59] text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

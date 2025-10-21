@@ -17,7 +17,7 @@ const NotificationCard = ({ name, task, time, image }) => {
 
       {/* Content */}
       <div className="flex flex-col gap-2">
-        <p className="text-gray-700 text-sm sm:text-base text-center md:text-left">
+        <p className="text-gray-700 text-lg sm:text-base text-center md:text-left">
           <span className="font-semibold text-emerald-900 text-xl">{name}</span>{" "}
           <span className='text-lg'>has submitted an offer on your task:</span>{" "} 
           <span className="font-semibold text-emerald-900">"{task}"</span>.

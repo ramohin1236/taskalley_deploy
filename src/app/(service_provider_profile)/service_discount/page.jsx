@@ -87,7 +87,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
       <div className="flex gap-1 mb-6">
         <button
           onClick={() => setActiveTab("my-discounts")}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
+          className={`px-4 py-2 text-lg font-medium rounded-md transition-colors cursor-pointer ${
             activeTab === "my-discounts"
               ? "bg-[#115e59] text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -97,7 +97,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
         </button>
         <button
           onClick={() => setActiveTab("referral-program")}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer ${
+          className={`px-4 py-2 text-lg font-medium rounded-md transition-colors cursor-pointer ${
             activeTab === "referral-program"
               ? "bg-[#115e59] text-white"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -132,7 +132,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900 text-sm">
+                      <p className="font-semibold text-gray-900 text-lg">
                         {item.value}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
@@ -170,7 +170,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
                     key={index}
                     className="border-b border-gray-100 hover:bg-gray-50"
                   >
-                    <td className="py-3 px-4 text-sm text-gray-900 text-md">
+                    <td className="py-3 px-4 text-lg text-gray-900 text-md">
                       {item.type}
                     </td>
                     <td className="py-3 px-4">
@@ -182,10 +182,10 @@ const ReferServiceDiscounts = ({ onBack }) => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm font-semibold text-gray-900">
+                    <td className="py-3 px-4 text-lg font-semibold text-gray-900">
                       {item.value}
                     </td>
-                    <td className="py-3 px-4 text-sm text-gray-600">
+                    <td className="py-3 px-4 text-lg text-gray-600">
                       {item.appliedDate}
                     </td>
                   </tr>
@@ -223,7 +223,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
                       />
                     </svg>
                   </div>
-                  <span className="font-mono text-gray-900 text-sm">
+                  <span className="font-mono text-gray-900 text-lg">
                     {referralCode}
                   </span>
                 </div>
@@ -232,7 +232,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
               <div className="flex gap-2">
                 <button
                   onClick={handleCopyCode}
-                  className="flex items-center cursor-pointer gap-2 px-4 py-3 bg-[#115e59] hover:bg-teal-800 text-white rounded-md transition-colors text-sm font-medium"
+                  className="flex items-center cursor-pointer gap-2 px-4 py-3 bg-[#115e59] hover:bg-teal-800 text-white rounded-md transition-colors text-lg font-medium"
                 >
                   {copied ? (
                     <>
@@ -249,7 +249,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
 
                 <button
                   onClick={handleShareLink}
-                  className="flex items-center cursor-pointer gap-2 px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-md transition-colors text-sm font-medium"
+                  className="flex items-center cursor-pointer gap-2 px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-md transition-colors text-lg font-medium"
                 >
                   <Share className="w-4 h-4" />
                   Share Link
@@ -263,7 +263,7 @@ const ReferServiceDiscounts = ({ onBack }) => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               How Referrals Work
             </h3>
-            <div className="space-y-3 text-sm text-gray-700">
+            <div className="space-y-3 text-lg text-gray-700">
               <div className="flex gap-3">
                 <div className="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-[#115e59] font-semibold text-xs">1</span>

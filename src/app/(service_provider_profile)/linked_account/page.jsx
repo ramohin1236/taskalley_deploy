@@ -87,19 +87,19 @@ const LinkdedAccount = () => {
                 <table className="min-w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[180px]">
+                      <th className="px-6 py-4 text-left text-lg font-semibold text-gray-600 uppercase tracking-wider min-w-[180px]">
                         Account Holder
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[140px]">
+                      <th className="px-6 py-4 text-left text-lg font-semibold text-gray-600 uppercase tracking-wider min-w-[140px]">
                         Provider
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[200px]">
+                      <th className="px-6 py-4 text-left text-lg font-semibold text-gray-600 uppercase tracking-wider min-w-[200px]">
                         Account Number
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[130px]">
+                      <th className="px-6 py-4 text-left text-lg font-semibold text-gray-600 uppercase tracking-wider min-w-[130px]">
                         Status
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-[220px]">
+                      <th className="px-6 py-4 text-left text-lg font-semibold text-gray-600 uppercase tracking-wider min-w-[220px]">
                         Actions
                       </th>
                     </tr>
@@ -111,22 +111,22 @@ const LinkdedAccount = () => {
                           <div className="flex items-center">
                            
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{account.nickName}</div>
+                              <div className="text-lg font-medium text-gray-900">{account.nickName}</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-lg font-medium bg-blue-100 text-blue-800 capitalize">
                               {account.account}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-sm text-gray-900 font-mono">{account.accountNumber}</span>
+                          <span className="text-lg text-gray-900 font-mono">{account.accountNumber}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-lg font-semibold ${
                             account.isConnected
                               ? "bg-green-100 text-green-800"
                               : "bg-red-100 text-red-800"
@@ -141,7 +141,7 @@ const LinkdedAccount = () => {
                           <div className="flex items-center space-x-3">
                             <button
                               onClick={() => handleEdit(account.id)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 text-lg font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                             >
                               <Edit className="w-3 h-3" />
                               Edit
@@ -149,14 +149,14 @@ const LinkdedAccount = () => {
                             {account.isConnected ? (
                               <button
                                 onClick={() => handleDisconnect(account.id)}
-                                className="px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                                className="px-3 py-1.5 text-lg font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                               >
                                 Disconnect
                               </button>
                             ) : (
                               <button
                                 onClick={() => handleConnect(account.id)}
-                                className="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                                className="px-3 py-1.5 text-lg font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                               >
                                 Connect
                               </button>
@@ -183,10 +183,10 @@ const LinkdedAccount = () => {
                     <div className="flex items-center">
                     
                       <div>
-                        <h3 className="font-medium text-gray-900 text-sm">{account.nickName}</h3>
+                        <h3 className="font-medium text-gray-900 text-lg">{account.nickName}</h3>
                       </div>
                     </div>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-lg font-semibold ${
                       account.isConnected
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
@@ -200,19 +200,19 @@ const LinkdedAccount = () => {
 
                   <div className="space-y-3 mb-4">
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500">Provider</span>
-                      <span className="text-sm font-medium text-blue-600 capitalize">{account.account}</span>
+                      <span className="text-lg text-gray-500">Provider</span>
+                      <span className="text-lg font-medium text-blue-600 capitalize">{account.account}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-xs text-gray-500">Account Number</span>
-                      <span className="text-sm text-gray-900 font-mono">{account.accountNumber}</span>
+                      <span className="text-lg text-gray-500">Account Number</span>
+                      <span className="text-lg text-gray-900 font-mono">{account.accountNumber}</span>
                     </div>
                   </div>
 
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleEdit(account.id)}
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 text-lg font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                     >
                       <Edit className="w-4 h-4" />
                       Edit
@@ -220,14 +220,14 @@ const LinkdedAccount = () => {
                     {account.isConnected ? (
                       <button
                         onClick={() => handleDisconnect(account.id)}
-                        className="flex-1 px-4 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                        className="flex-1 px-4 py-2 text-lg font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                       >
                         Disconnect
                       </button>
                     ) : (
                       <button
                         onClick={() => handleConnect(account.id)}
-                        className="flex-1 px-4 py-2 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                        className="flex-1 px-4 py-2 text-lg font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                       >
                         Connect
                       </button>
