@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { ArrowLeft, Copy, Share, Check } from "lucide-react";
+import { CgProfile } from "react-icons/cg";
+import { TbDiscount } from "react-icons/tb";
 
 const ReferServiceDiscounts = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState("my-discounts");
@@ -70,15 +72,12 @@ const ReferServiceDiscounts = ({ onBack }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-6 lg:p-8">
+    <div className="max-w-7xl mx-auto lg:px-8 py-4 lg:py-6 mt-12">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={onBack}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-gray-600" />
-        </button>
+         <button className=" hover:bg-gray-100 rounded-lg transition-colors lg:p-0 lg:hover:bg-transparent">
+            <TbDiscount className="text-3xl text-gray-600 cursor-pointer hover:text-gray-800 transition-colors" />
+          </button>
         <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
           Referrals & Discounts
         </h1>
@@ -314,7 +313,7 @@ const ReferServiceDiscountsDemo = () => {
   }
 
   return (
-    <div className=" bg-gray-50 py-8">
+    <div className="  py-8">
       <ReferServiceDiscounts onBack={() => setShowComponent(false)} />
     </div>
   );

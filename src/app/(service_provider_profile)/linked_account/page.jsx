@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { ChevronLeft, Edit, Plus, Shield } from "lucide-react";
+import { CgProfile } from "react-icons/cg";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { MdManageAccounts } from "react-icons/md";
 
 const LinkdedAccount = () => {
   const [accounts, setAccounts] = useState([
@@ -56,12 +59,12 @@ const LinkdedAccount = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="max-w-7xl mx-auto lg:px-8 py-4 lg:py-6 mt-12">
+      <div className="">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6 lg:mb-8">
-          <button className="p-2 hover:bg-white rounded-lg transition-colors shadow-sm">
-            <ChevronLeft className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+           <button className=" hover:bg-gray-100 rounded-lg transition-colors lg:p-0 lg:hover:bg-transparent">
+            <MdManageAccounts className="text-3xl text-gray-600 cursor-pointer hover:text-gray-800 transition-colors" />
           </button>
           <div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">

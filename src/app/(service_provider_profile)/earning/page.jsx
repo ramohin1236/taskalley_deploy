@@ -1,6 +1,8 @@
 "use client"
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Mail, DollarSign } from 'lucide-react';
+import { CgProfile } from 'react-icons/cg';
+import { FaMoneyBillTransfer } from 'react-icons/fa6';
 
 const page = () => {
      const [activeTab, setActiveTab] = useState('Daily');
@@ -64,12 +66,12 @@ const page = () => {
 
 
   return (
-     <div className=" p-4 md:p-6 lg:p-8">
+     <div className="max-w-7xl mx-auto lg:px-8 py-4 lg:py-6 mt-12">
       <div className="">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+         <button className=" hover:bg-gray-100 rounded-lg transition-colors lg:p-0 lg:hover:bg-transparent">
+            <FaMoneyBillTransfer className="text-2xl text-gray-600 cursor-pointer hover:text-gray-800 transition-colors" />
           </button>
           <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
             Earning

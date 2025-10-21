@@ -9,6 +9,7 @@ import { IoIosSettings } from "react-icons/io";
 import { TbDiscount } from "react-icons/tb";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { FaHome } from "react-icons/fa";
+import { MdManageAccounts } from "react-icons/md";
 
 const sidebarLinks = [
   { name: "Profile Info", href: "/service_profile_info", icon: <CgProfile /> },
@@ -17,7 +18,7 @@ const sidebarLinks = [
     href: "/service_provider_notification",
     icon: <IoIosNotifications />,
   },
-  { name: "Manage Account", href: "/linked_account", icon: <FaMoneyBillTransfer /> },
+  { name: "Manage Account", href: "/linked_account", icon: <MdManageAccounts /> },
   { name: "Earning", href: "/earning", icon: <FaMoneyBillTransfer /> },
   {
     name: "Security Settings",

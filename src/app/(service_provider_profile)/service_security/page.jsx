@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { FaUserXmark } from "react-icons/fa6";
+import { IoIosSettings } from "react-icons/io";
 
 const ServiceChangePassword = ({ onBack }) => {
   const [formData, setFormData] = useState({
@@ -143,18 +144,15 @@ const ServiceChangePassword = ({ onBack }) => {
   );
 
   return (
-    <div className="bg-white py-6 md:p-8 rounded-lg">
+    <div className="max-w-7xl mx-auto lg:px-8 py-4 lg:py-6 mt-12">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-8">
         <div className="flex items-center gap-3 mb-8">
-          <button
-            onClick={onBack}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-gray-600" />
+          <button className=" hover:bg-gray-100 rounded-lg transition-colors lg:p-0 lg:hover:bg-transparent">
+            <IoIosSettings className="text-2xl text-gray-600 cursor-pointer hover:text-gray-800 transition-colors" />
           </button>
           <h1 className="text-lg md:text-xl font-semibold text-gray-900">
-            Change Password
+            Security Settings
           </h1>
         </div>
         <div>
