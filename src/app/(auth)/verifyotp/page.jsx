@@ -5,8 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 const VerfiyOtp = () => {
-  const [otp, setOtp] = useState(Array(4).fill("")); // Array with 6 empty strings
-  const inputRefs = useRef([]); // Array of refs for each input field
+  const [otp, setOtp] = useState(Array(4).fill("")); 
+  const inputRefs = useRef([]);
 
   const handleKeyDown = (e) => {
     if (
@@ -112,10 +112,12 @@ const VerfiyOtp = () => {
                       </div>
                    
 
-                    <div className="mt-4 rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
-                      <button className="bg-[#115E59] w-full py-2 text-white cursor-pointer ">
+                    <div className="mt-4 flex w-full text-center rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
+                      <Link
+                      href="/"
+                      className="bg-[#115E59] w-full py-2 text-white cursor-pointer ">
                         Verify
-                      </button>
+                      </Link>
                     </div>
                     
                   </div>

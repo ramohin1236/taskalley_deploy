@@ -3,7 +3,7 @@ import main_logo from "../../../../public/main_logo_svg.svg";
 import React from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebookF } from "react-icons/fa6";
+import { FaApple, FaFacebookF } from "react-icons/fa6";
 import Link from "next/link";
 
 const Register = () => {
@@ -29,7 +29,7 @@ const Register = () => {
                 <div className="w-full">
                   <div className="p-6 sm:p-8 ">
                      <Link 
-                     href="/manage-dispute"
+                     href="/"
                      className="flex justify-center items-center mb-12">
                                          <Image src={main_logo} alt="main_logo" className="w-44"/>
                                        </Link>
@@ -170,11 +170,12 @@ const Register = () => {
                     </p>
                     <div className="mt-4 flex gap-6">
                       <button className="border-1 border-[#115E59] p-3.5 rounded-sm transition transform duration-300 hover:scale-101 cursor-pointer">
-                        <FcGoogle className="text-2xl" />
+                        <FcGoogle className="text-2xl " />
                       </button>
                       <button className="border-1 border-[#115E59] p-3.5 rounded-sm transition transform duration-300 hover:scale-101 cursor-pointer">
-                        <FaFacebookF className="text-2xl text-blue-500" />
+                        <FaApple className="text-2xl text-[#115e59]" />
                       </button>
+                    
                     </div>
                   </div>
                 </div>

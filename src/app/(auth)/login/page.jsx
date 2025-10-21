@@ -118,10 +118,12 @@ const Login = () => {
                         </Link>
                       </p>
 
-                      <div className="mt-4 rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
-                        <button className="bg-[#115E59] w-full py-2 text-white cursor-pointer ">
+                      <div className="mt-4 rounded-sm overflow-clip transition transform duration-300 hover:scale-101 flex w-full text-center">
+                        <Link 
+                        href="/"
+                        className="bg-[#115E59] w-full py-2 text-white cursor-pointer ">
                           Sign In
-                        </button>
+                        </Link>
                       </div>
                     </form>
                     {/* social login */}

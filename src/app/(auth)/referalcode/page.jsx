@@ -48,21 +48,24 @@ const ReferalCode = () => {
                         </div>
                       </div>
 
-                      <div className="mt-4 rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
-                        <button className="bg-[#115E59] w-full py-2 text-white cursor-pointer ">
-                          Apply Code & Continue
-                        </button>
-
-                        
-                      </div>
-                    <div className="flex">
+                      <div className="mt-4 w-full rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
+                       <div className="flex text-center">
                           <Link
+                          href="verifyphone"
+                          className="bg-[#115E59] w-full py-2 text-white cursor-pointer "
+                        >
+                          Apply Code & Continue
+                        </Link>
+                       </div>
+                      </div>
+                      <div className="flex">
+                        <Link
                           href="verifyphone"
                           className="text-center px-6 py-2 text-[#115e59] border-1 border-[#115e59] w-full rounded-md hover:bg-[#115e59] hover:text-white transition transform duration-300"
                         >
                           Skip & Continue Without Code
                         </Link>
-                    </div>
+                      </div>
                     </form>
                   </div>
                 </div>
