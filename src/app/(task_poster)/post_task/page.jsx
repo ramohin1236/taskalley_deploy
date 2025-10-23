@@ -251,7 +251,10 @@ const TaskCreationApp = () => {
                 onChange={(e) =>
                   handleInputChange("agreedToTerms", e.target.checked)
                 }
+                className="w-4 h-4 cursor-pointer"
+                style={{ accentColor: "#115e59" }}
               />
+
               <p className="text-sm text-gray-600">
                 I confirm this task complies with all rules.
               </p>
