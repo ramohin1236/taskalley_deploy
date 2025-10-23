@@ -6,8 +6,6 @@ import {
   Calendar,
   DollarSign,
   Image,
-  X,
-  Upload,
 } from "lucide-react";
 import MultiStepForm from "@/components/task_post/MultiStepForm";
 import FormNavigation from "@/components/task_post/FormNavigation";
@@ -15,10 +13,11 @@ import StepHeader from "@/components/task_post/StepHeader";
 import FormSelect from "@/components/task_post/FormSelect";
 import FormInput from "@/components/task_post/FormInput";
 import RadioGroup from "@/components/task_post/RadioGroup";
+import { DatePicker, Form, TimePicker } from "antd";
+import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 
 const TaskCreationApp = () => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [uploadedImages, setUploadedImages] = useState([]);
   const [formData, setFormData] = useState({
     taskTitle: "",
     taskCategory: "",
@@ -54,46 +53,6 @@ const TaskCreationApp = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle image upload
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-
-    files.forEach((file) => {
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        alert("Please select valid image files only");
-        return;
-      }
-
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUploadedImages((prev) => [
-          ...prev,
-          {
-            id: Date.now() + Math.random(),
-            url: e.target.result,
-            name: file.name,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // Reset input
-    e.target.value = "";
-  };
-
-  // Remove image
-  const handleRemoveImage = (imageId) => {
-    setUploadedImages((prev) => prev.filter((img) => img.id !== imageId));
-  };
-
   const handleNext = () => {
     setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
   };
@@ -104,23 +63,18 @@ const TaskCreationApp = () => {
 
   const handleSubmit = () => {
     console.log("Form submitted:", formData);
-    console.log("Uploaded images:", uploadedImages);
     alert("Task created successfully!");
   };
 
   useEffect(() => {
     const savedStep = localStorage.getItem("currentStep");
     const savedForm = localStorage.getItem("formData");
-    const savedImages = localStorage.getItem("uploadedImages");
 
     if (savedStep) {
       setCurrentStep(Number(savedStep));
     }
     if (savedForm) {
       setFormData(JSON.parse(savedForm));
-    }
-    if (savedImages) {
-      setUploadedImages(JSON.parse(savedImages));
     }
   }, []);
 
@@ -131,10 +85,6 @@ const TaskCreationApp = () => {
   useEffect(() => {
     localStorage.setItem("formData", JSON.stringify(formData));
   }, [formData]);
-
-  useEffect(() => {
-    localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
-  }, [uploadedImages]);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -183,55 +133,10 @@ const TaskCreationApp = () => {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Attachments (optional)
               </label>
-
-              {/* Upload Area */}
-              <label className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-teal-800 hover:bg-gray-50 transition-all block">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <Upload className="mx-auto w-8 h-8 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600 font-medium">
-                  Click to upload images
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  PNG, JPG up to 5MB (Max 10 images)
-                </p>
-              </label>
-
-              {/* Image Preview Grid */}
-              {uploadedImages.length > 0 && (
-                <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-700 mb-3">
-                    Uploaded Images ({uploadedImages.length})
-                  </p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {uploadedImages.map((image) => (
-                      <div key={image.id} className="relative group">
-                        <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-teal-800 transition-colors">
-                          <img
-                            src={image.url}
-                            alt={image.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <button
-                          onClick={() => handleRemoveImage(image.id)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                        <p className="text-xs text-gray-600 mt-1 truncate">
-                          {image.name}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-teal-800">
+                <Image className="mx-auto w-8 h-8 text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">Upload Images</p>
+              </div>
             </div>
           </div>
         );
@@ -249,8 +154,6 @@ const TaskCreationApp = () => {
               ]}
               value={formData.taskType}
               onChange={(value) => handleInputChange("taskType", value)}
-              className="text-gray-700 [&_input[type='radio']]:border-green-500
-               [&_input[type='radio']]:bg-white"
             />
             {formData.taskType === "in-person" && (
               <FormInput
@@ -272,27 +175,48 @@ const TaskCreationApp = () => {
             />
             {formData.taskTiming === "fixed-date" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormInput
-                  type="date"
+                <Form.Item
                   label="Preferred Date"
-                  value={formData.preferredDate}
-                  onChange={(e) =>
-                    handleInputChange("preferredDate", e.target.value)
-                  }
-                />
-                <FormSelect
+                  name="startDate"
+                  rules={[{ required: true, message: "Select start date" }]}
+                  // vertical layout ensures label is above input
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                >
+                  <DatePicker
+                    placeholder="Select opening time"
+                    size="large"
+                    className="w-full rounded-lg"
+                    format="YYYY-MM-DD"
+                    suffixIcon={<CalendarOutlined className="text-gray-400" />}
+                  />
+                </Form.Item>
+
+                <Form.Item
                   label="Preferred Time"
-                  options={[
-                    "Morning (8AM - 12PM)",
-                    "Afternoon (12PM - 6PM)",
-                    "Evening (6PM - 10PM)",
-                  ]}
-                  value={formData.preferredTime}
-                  onChange={(e) =>
-                    handleInputChange("preferredTime", e.target.value)
-                  }
-                  placeholder="Select time"
-                />
+                  name="preferredTime"
+                  rules={[{ required: true, message: "Select preferred time" }]}
+                  labelCol={{ span: 24 }}
+                  wrapperCol={{ span: 24 }}
+                >
+                  <TimePicker
+                    placeholder="Select time"
+                    size="large"
+                    className="w-full rounded-lg"
+                    suffixIcon={
+                      <ClockCircleOutlined className="text-gray-400" />
+                    }
+                    format="HH:mm"
+                    value={
+                      formData.preferredTime
+                        ? dayjs(formData.preferredTime, "HH:mm")
+                        : null
+                    }
+                    onChange={(time, timeString) =>
+                      handleInputChange("preferredTime", timeString)
+                    }
+                  />
+                </Form.Item>
               </div>
             )}
           </div>

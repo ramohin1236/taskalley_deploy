@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
+    "antd": "^5.27.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "daisyui": "^5.1.7",
+    "dayjs": "^1.11.18",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.542.0",
     "next": "15.5.2",
