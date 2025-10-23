@@ -1,6 +1,7 @@
+"use client";
 import registration_img from "../../../../public/login_page_image.png";
 import main_logo from "../../../../public/main_logo_svg.svg";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
 import { FaApple, FaFacebookF } from "react-icons/fa6";
@@ -8,6 +9,21 @@ import Link from "next/link";
 import { Apple, AppleIcon } from "lucide-react";
 
 const Login = () => {
+    const [formData, setFormData] = useState({
+      taskTitle: "",
+      taskCategory: "",
+      taskDescription: "",
+      taskType: "in-person",
+      location: "",
+      taskTiming: "fixed-date",
+      preferredDate: "",
+      preferredTime: "",
+      budget: "",
+      agreedToTerms: false,
+    });
+     const handleInputChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
   return (
     <section className="">
       <div className="max-w-7xl mx-auto flex items-center justify-center max-h-screen mt-12 mb-12">
@@ -29,9 +45,12 @@ const Login = () => {
               <div className=" flex flex-col items-center justify-center py-6 ">
                 <div className="w-full">
                   <div className="p-6 sm:p-8 ">
-                   <Link href='/' className="flex justify-center items-center mb-12">
-                     <Image src={main_logo} alt="main_logo" className="w-44"/>
-                   </Link>
+                    <Link
+                      href="/"
+                      className="flex justify-center items-center mb-12"
+                    >
+                      <Image src={main_logo} alt="main_logo" className="w-44" />
+                    </Link>
                     <h1 className="text-[#394352] text-3xl font-semibold my-4">
                       Login to Account
                     </h1>
@@ -83,10 +102,16 @@ const Login = () => {
                       <div className="flex flex-wrap items-center justify-between gap-4">
                         <div className="flex items-center">
                           <input
-                            id="remember-me"
-                            name="remember-me"
                             type="checkbox"
-                            className="h-4 w-4 shrink-0 text-[#6B7280] focus:ring-blue-500 border-slate-300 rounded"
+                            checked={formData.agreedToTerms}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "agreedToTerms",
+                                e.target.checked
+                              )
+                            }
+                            className="w-4 h-4 cursor-pointer"
+                            style={{ accentColor: "#115e59" }}
                           />
                           <label className="ml-3 block text-sm text-[#1F2937]">
                             Remember me
@@ -120,16 +145,17 @@ const Login = () => {
                       </p>
 
                       <div className="mt-4 rounded-sm overflow-clip transition transform duration-300 hover:scale-101 flex w-full text-center">
-                        <Link 
-                        href="/"
-                        className="bg-[#115E59] w-full py-2 text-white cursor-pointer ">
+                        <Link
+                          href="/"
+                          className="bg-[#115E59] w-full py-2 text-white cursor-pointer "
+                        >
                           Sign In
                         </Link>
                       </div>
                     </form>
                     {/* social login */}
                     <p className="text-[#6B7280] font-semibold mt-2">
-                     Or continue with
+                      Or continue with
                     </p>
                     <div className="mt-4 flex gap-6">
                       <button className="border-1 border-[#115E59] p-3.5 rounded-sm transition transform duration-300 hover:scale-101 cursor-pointer">

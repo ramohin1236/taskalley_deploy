@@ -48,7 +48,7 @@ const ProfileSideNav = ({ open, onClose }) => {
 
   return (
     <div
-      className={`fixed md:relative top-0 left-0 min-h-full rounded-l-lg bg-[#E6F4F1] shadow-lg z-40 transform transition-transform duration-300 w-80 mt-20 md:mt-20 lg:mt-0
+      className={`fixed md:relative top-0 left-0 min-h-full rounded-l-lg bg-[#E6F4F1] shadow-lg z-40 transform transition-transform duration-300 mt-20 md:mt-20 lg:mt-0
                ${
                  open ? "translate-x-0" : "-translate-x-full"
                } md:translate-x-0`}
