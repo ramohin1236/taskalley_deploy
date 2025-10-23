@@ -1,13 +1,20 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
-import { FileText, CheckCircle, Calendar, DollarSign, Image, X, Upload } from "lucide-react";
+import {
+  FileText,
+  CheckCircle,
+  Calendar,
+  DollarSign,
+  Image,
+  X,
+  Upload,
+} from "lucide-react";
 import MultiStepForm from "@/components/task_post/MultiStepForm";
 import FormNavigation from "@/components/task_post/FormNavigation";
 import StepHeader from "@/components/task_post/StepHeader";
 import FormSelect from "@/components/task_post/FormSelect";
 import FormInput from "@/components/task_post/FormInput";
 import RadioGroup from "@/components/task_post/RadioGroup";
-
 
 const TaskCreationApp = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -25,7 +32,6 @@ const TaskCreationApp = () => {
     agreedToTerms: false,
   });
 
-
   const steps = [
     { id: 0, title: "Task Overview" },
     { id: 1, title: "Task Details" },
@@ -34,49 +40,58 @@ const TaskCreationApp = () => {
   ];
 
   const categories = [
-    "Cleaning", "Plumbing", "Electrical", "Appliance Repair",
-    "Furniture Assembly", "Painting", "Moving Help", "AC Installation"
+    "Cleaning",
+    "Plumbing",
+    "Electrical",
+    "Appliance Repair",
+    "Furniture Assembly",
+    "Painting",
+    "Moving Help",
+    "AC Installation",
   ];
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   // Handle image upload
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
-    
-    files.forEach(file => {
+
+    files.forEach((file) => {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select valid image files only');
+      if (!file.type.startsWith("image/")) {
+        alert("Please select valid image files only");
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        alert("File size must be less than 5MB");
         return;
       }
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        setUploadedImages(prev => [...prev, {
-          id: Date.now() + Math.random(),
-          url: e.target.result,
-          name: file.name
-        }]);
+        setUploadedImages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + Math.random(),
+            url: e.target.result,
+            name: file.name,
+          },
+        ]);
       };
       reader.readAsDataURL(file);
     });
-    
+
     // Reset input
-    e.target.value = '';
+    e.target.value = "";
   };
 
   // Remove image
   const handleRemoveImage = (imageId) => {
-    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
+    setUploadedImages((prev) => prev.filter((img) => img.id !== imageId));
   };
 
   const handleNext = () => {
@@ -93,7 +108,6 @@ const TaskCreationApp = () => {
     alert("Task created successfully!");
   };
 
-  
   useEffect(() => {
     const savedStep = localStorage.getItem("currentStep");
     const savedForm = localStorage.getItem("formData");
@@ -110,11 +124,9 @@ const TaskCreationApp = () => {
     }
   }, []);
 
-
   useEffect(() => {
     localStorage.setItem("currentStep", currentStep);
   }, [currentStep]);
-
 
   useEffect(() => {
     localStorage.setItem("formData", JSON.stringify(formData));
@@ -123,7 +135,6 @@ const TaskCreationApp = () => {
   useEffect(() => {
     localStorage.setItem("uploadedImages", JSON.stringify(uploadedImages));
   }, [uploadedImages]);
-
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -142,7 +153,9 @@ const TaskCreationApp = () => {
               label="Task Category"
               options={categories}
               value={formData.taskCategory}
-              onChange={(e) => handleInputChange("taskCategory", e.target.value)}
+              onChange={(e) =>
+                handleInputChange("taskCategory", e.target.value)
+              }
               placeholder="Select Category"
               required
             />
@@ -160,7 +173,9 @@ const TaskCreationApp = () => {
               <textarea
                 rows={4}
                 value={formData.taskDescription}
-                onChange={(e) => handleInputChange("taskDescription", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("taskDescription", e.target.value)
+                }
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-800 resize-none"
               />
             </div>
@@ -168,7 +183,7 @@ const TaskCreationApp = () => {
               <label className="block text-sm font-medium text-gray-700 mb-3">
                 Attachments (optional)
               </label>
-              
+
               {/* Upload Area */}
               <label className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-teal-800 hover:bg-gray-50 transition-all block">
                 <input
@@ -179,8 +194,12 @@ const TaskCreationApp = () => {
                   className="hidden"
                 />
                 <Upload className="mx-auto w-8 h-8 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600 font-medium">Click to upload images</p>
-                <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB (Max 10 images)</p>
+                <p className="text-sm text-gray-600 font-medium">
+                  Click to upload images
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  PNG, JPG up to 5MB (Max 10 images)
+                </p>
               </label>
 
               {/* Image Preview Grid */}
@@ -205,7 +224,9 @@ const TaskCreationApp = () => {
                         >
                           <X className="w-4 h-4" />
                         </button>
-                        <p className="text-xs text-gray-600 mt-1 truncate">{image.name}</p>
+                        <p className="text-xs text-gray-600 mt-1 truncate">
+                          {image.name}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -228,6 +249,8 @@ const TaskCreationApp = () => {
               ]}
               value={formData.taskType}
               onChange={(value) => handleInputChange("taskType", value)}
+              className="text-gray-700 [&_input[type='radio']]:border-green-500
+               [&_input[type='radio']]:bg-white"
             />
             {formData.taskType === "in-person" && (
               <FormInput
@@ -253,7 +276,9 @@ const TaskCreationApp = () => {
                   type="date"
                   label="Preferred Date"
                   value={formData.preferredDate}
-                  onChange={(e) => handleInputChange("preferredDate", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("preferredDate", e.target.value)
+                  }
                 />
                 <FormSelect
                   label="Preferred Time"
@@ -263,7 +288,9 @@ const TaskCreationApp = () => {
                     "Evening (6PM - 10PM)",
                   ]}
                   value={formData.preferredTime}
-                  onChange={(e) => handleInputChange("preferredTime", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("preferredTime", e.target.value)
+                  }
                   placeholder="Select time"
                 />
               </div>
@@ -280,7 +307,9 @@ const TaskCreationApp = () => {
                 How much are you offering?
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₦</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  ₦
+                </span>
                 <input
                   type="number"
                   placeholder="1,500"
@@ -294,7 +323,9 @@ const TaskCreationApp = () => {
               <input
                 type="checkbox"
                 checked={formData.agreedToTerms}
-                onChange={(e) => handleInputChange("agreedToTerms", e.target.checked)}
+                onChange={(e) =>
+                  handleInputChange("agreedToTerms", e.target.checked)
+                }
               />
               <p className="text-sm text-gray-600">
                 I confirm this task complies with all rules.
