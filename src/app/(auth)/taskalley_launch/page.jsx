@@ -72,6 +72,7 @@ const TaskAlleyLaunch = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(false);
 
   const toggleFAQ = (index) => {
@@ -130,8 +131,9 @@ const TaskAlleyLaunch = () => {
     setLoading(true);
 
     const data = {
-      email: email,
-      phone: phone,
+      email,
+      phone,
+      role, // include role in payload
     };
 
     try {
@@ -147,6 +149,7 @@ const TaskAlleyLaunch = () => {
         toast.success("Thank you for subscribing!");
         setEmail("");
         setPhone("");
+        setRole(""); // reset dropdown
       } else {
         toast.error("Something went wrong! Please try again.");
       }
@@ -348,33 +351,7 @@ const TaskAlleyLaunch = () => {
 
       <HowWorks />
 
-      <section className="project_container p-6">
-        <h2 className="text-3xl font-bold mb-14">Frequently Asked Questions</h2>
-        <div className="space-y-10 ">
-          {faqs.map((faq, index) => (
-            <div key={index} className="border-b-1  border-black ">
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full flex justify-between items-center px-4 py-3 text-left text-lg font-medium cursor-pointer"
-              >
-                {faq.question}
-                {openIndex === index ? (
-                  <FaChevronUp className="text-teal-600 transition-transform duration-300" />
-                ) : (
-                  <FaChevronDown className="text-teal-600 transition-transform duration-300" />
-                )}
-              </button>
-              <div
-                className={`px-4 overflow-hidden transition-all duration-500 ${
-                  openIndex === index ? "max-h-40 py-2" : "max-h-0"
-                }`}
-              >
-                <p className="text-gray-600">{faq.answer}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+    
 
       {/* CTA Section */}
       <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
@@ -427,6 +404,22 @@ const TaskAlleyLaunch = () => {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                 />
+              </div>
+
+              {/* Role Dropdown */}
+              <div className="flex flex-col sm:flex-row gap-4 w-full">
+                <select
+                  className="flex-1 w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  required
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select Role
+                  </option>
+                  <option value="Provider">Provider</option>
+                  <option value="Customer">Customer</option>
+                </select>
               </div>
 
               {/* Submit Button */}
