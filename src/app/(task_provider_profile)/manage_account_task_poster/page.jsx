@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, Edit, Plus, Shield } from "lucide-react";
+import { ChevronLeft, Edit, Plus, Shield, X } from "lucide-react";
 import { CgProfile } from "react-icons/cg";
 import { FaMoneyBillTransfer } from "react-icons/fa6";
 import { MdManageAccounts } from "react-icons/md";
@@ -15,24 +15,10 @@ const LinkdedAccount = () => {
       accountNumber: "**** **** **** 8567",
       status: "Connected",
       isConnected: true,
-    },
-    {
-      id: 2,
-      nickName: "John Doe",
-      account: "paypal",
-      accountNumber: "**** **** **** 1234",
-      status: "Disconnected",
-      isConnected: false,
-    },
-    {
-      id: 3,
-      nickName: "Sarah Wilson",
-      account: "square",
-      accountNumber: "**** **** **** 9876",
-      status: "Connected",
-      isConnected: true,
-    },
+    }
   ]);
+
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
   const handleEdit = (accountId) => {
     console.log("Edit account:", accountId);
@@ -140,13 +126,13 @@ const LinkdedAccount = () => {
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => handleEdit(account.id)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 text-lg font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                              onClick={() => setShowRejectModal(true)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 text-lg font-medium text-[#115e59] border-[#115e59] bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                             >
                               <Edit className="w-3 h-3" />
                               Edit
                             </button>
-                            {account.isConnected ? (
+                            {/* {account.isConnected ? (
                               <button
                                 onClick={() => handleDisconnect(account.id)}
                                 className="px-3 py-1.5 text-lg font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
@@ -160,7 +146,7 @@ const LinkdedAccount = () => {
                               >
                                 Connect
                               </button>
-                            )}
+                            )} */}
                           </div>
                         </td>
                       </tr>
@@ -170,6 +156,70 @@ const LinkdedAccount = () => {
               </div>
             </div>
           </div>
+
+
+  {/* Modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 p-6 relative">
+            {/* Close button */}
+            <button
+              onClick={() => setShowRejectModal(false)}
+              className="absolute top-3 right-3 text-red-500 hover:text-red-700 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Update Your Account
+            </h3>
+
+            {/* Textarea */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Account Name
+              </label>
+              <input className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-[#115e59] focus:outline-none" 
+              placeholder="Input Your Account Name"
+              type="text" />
+              
+            </div>
+            {/* Textarea */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Account Number
+              </label>
+              <input className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-[#115e59] focus:outline-none" 
+              placeholder="Input Your Account Number"
+              type="number" />
+              
+            </div>
+        
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowRejectModal(false)}
+                className="px-6 py-2.5 border border-gray-300
+                cursor-pointer text-gray-700 rounded-md hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                className="px-6 py-2.5 bg-[#115E59] text-white rounded-md
+              cursor-pointer hover:bg-teal-700"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+
 
           {/* Mobile View */}
           <div className="md:hidden">
@@ -217,7 +267,7 @@ const LinkdedAccount = () => {
                       <Edit className="w-4 h-4" />
                       Edit
                     </button>
-                    {account.isConnected ? (
+                    {/* {account.isConnected ? (
                       <button
                         onClick={() => handleDisconnect(account.id)}
                         className="flex-1 px-4 py-2 text-lg font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
@@ -231,7 +281,7 @@ const LinkdedAccount = () => {
                       >
                         Connect
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </div>
               ))}
