@@ -196,7 +196,7 @@ const TaskAlleyLaunch = () => {
       </div>
 
       {/* Why Choose TaskAlleey Section */}
-      <div className="project_container px-2 py-12">
+      <div className="project_container px-2 ">
         <div className=" text-center flex flex-col gap-3 pb-4 md:pb-20">
           <h4 className="font-bold text-3xl lg:text-4xl">
             Why Choose TaskAlley?

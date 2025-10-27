@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, Mail, DollarSign } from 'lucide-react';
 import { CgProfile } from 'react-icons/cg';
 import { FaMoneyBillTransfer } from 'react-icons/fa6';
+import { TbCurrencyNaira } from 'react-icons/tb';
 
 const page = () => {
      const [activeTab, setActiveTab] = useState('Daily');
@@ -95,7 +96,7 @@ const page = () => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-6">
             <div className="bg-teal-100 p-2 rounded-lg">
-              <DollarSign className="w-4 h-4 text-[#115e59]" />
+              <TbCurrencyNaira className="w-4 h-4 text-[#115e59]" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900">Earnings Breakdown</h3>
           </div>
