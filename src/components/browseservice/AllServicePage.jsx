@@ -21,7 +21,7 @@ const taskData = [
     month: "15 May 2020 8.00am",
     open: "open",
     close: "close",
-    price: "$24.00",
+    price: "₦24.00",
   },
   {
     id: 2,
@@ -37,7 +37,7 @@ const taskData = [
     month: "15 May 2020 8.00am",
     open: "open",
     close: "close",
-    price: "$24.00",
+    price: "₦24.00",
   },
   {
     id: 3,
@@ -53,7 +53,7 @@ const taskData = [
     month: "15 May 2020 8.00am",
     open: "open",
     close: "close",
-    price: "$24.00",
+    price: "₦24.00",
   },
   {
     id: 4,
@@ -69,7 +69,7 @@ const taskData = [
     month: "15 May 2020 8.00am",
     open: "open",
     close: "close",
-    price: "$24.00",
+    price: "₦24.00",
   },
   {
     id: 5,
@@ -85,7 +85,7 @@ const taskData = [
     month: "15 May 2020 8.00am",
     open: "open",
     close: "close",
-    price: "$24.00",
+    price: "₦24.00",
   },
 ];
 
