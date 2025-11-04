@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google"
 import "../globals.css";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
+import StoreProvider from "@/app/StoreProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,10 +32,11 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        <div className="">{children}</div>
-
-        <Footer />
+        <StoreProvider>
+          <Navbar />
+          <div className="">{children}</div>
+          <Footer />
+        </StoreProvider>
       </body>
     </html>
   );

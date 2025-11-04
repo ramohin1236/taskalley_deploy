@@ -46,7 +46,7 @@ const page = () => {
               {/* Options */}
               <div className="space-y-4 space-x-2">
                 <Link
-                  href='register'
+                  href={{ pathname: 'register', query: { role: 'customer' } }}
                   className="w-full flex items-center gap-4 border rounded-lg py-3 px-4 text-xl md:text-2xl transition border-[#878b92] bg-white font-semibold" 
               
                 >
@@ -54,7 +54,7 @@ const page = () => {
                   Customer
                 </Link>
                 <Link
-                 href='register'
+                 href={{ pathname: 'register', query: { role: 'provider' } }}
                   className="w-full flex items-center gap-4 border rounded-lg py-3 px-4 transition border-[#878b92] bg-white text-xl md:text-2xl font-semibold">
                  <Image src={service_provider} alt="customer"  className="w-20"/>
                   Service Provider

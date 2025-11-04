@@ -4,26 +4,70 @@ import main_logo from "../../../../public/main_logo_svg.svg";
 import React, { useState } from "react";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
-import { FaApple, FaFacebookF } from "react-icons/fa6";
+import { FaApple } from "react-icons/fa6";
 import Link from "next/link";
-import { Apple, AppleIcon } from "lucide-react";
+import { useLoginUserMutation } from "@/lib/features/auth/authApi";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/lib/features/auth/authSlice";
+import { useRouter } from "next/navigation";
+import { parseJwt } from "@/utils/auth";
 
 const Login = () => {
-    const [formData, setFormData] = useState({
-      taskTitle: "",
-      taskCategory: "",
-      taskDescription: "",
-      taskType: "in-person",
-      location: "",
-      taskTiming: "fixed-date",
-      preferredDate: "",
-      preferredTime: "",
-      budget: "",
-      agreedToTerms: false,
-    });
-     const handleInputChange = (field, value) => {
+  const [loginUser, { isLoading, isError, isSuccess, error }] =
+    useLoginUserMutation();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    taskTitle: "",
+    taskCategory: "",
+    taskDescription: "",
+    taskType: "in-person",
+    location: "",
+    taskTiming: "fixed-date",
+    preferredDate: "",
+    preferredTime: "",
+    budget: "",
+    agreedToTerms: false,
+  });
+  const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+ 
+  const onSubmit = async (data) => {
+    try {
+        const result = await loginUser(data).unwrap();
+        console.log("Login successful result:", result);
+        if (result.success && result.data) {
+            dispatch(setCredentials({
+                accessToken: result.data.accessToken,
+                refreshToken: result.data.refreshToken,
+                isAddressProvided: result.data.isAddressProvided || false,
+            }));
+            
+            const decoded = parseJwt(result?.data?.accessToken);
+            const userRole = decoded?.role || 'customer';
+            
+            if (!result.data.isAddressProvided) {
+                router.push('/verify');
+            } else {
+                if (userRole === 'provider') {
+                    router.push('/service_provider_profile');
+                } else {
+                    router.push('/');
+                }
+            }
+        }
+    } catch (err) {
+        console.error("Login failed:", err);
+        alert(`Login failed: ${err.data?.message || err.error}`);
+    }
+};
+
+
+
   return (
     <section className="">
       <div className="max-w-7xl mx-auto flex items-center justify-center max-h-screen mt-12 mb-12">
@@ -58,14 +102,18 @@ const Login = () => {
                       Please enter your email and password to continue
                     </p>
                     {/* -------------------form------------------------------ */}
-                    <form className="mt-12 space-y-6">
+                    <form
+                      onSubmit={handleSubmit(onSubmit)}
+                      className="mt-12 space-y-6"
+                    >
                       <div>
                         <label className="text-[#1F2937] text-sm font-medium mb-2 block">
                           Email address
                         </label>
                         <div className="relative flex items-center">
                           <input
-                            name="username"
+                            {...register("email", { required: true })}
+                            name="email"
                             type="text"
                             required
                             className="w-full text-[#6B7280] text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600"
@@ -79,6 +127,7 @@ const Login = () => {
                         </label>
                         <div className="relative flex items-center">
                           <input
+                           {...register("password", { required: true })}
                             name="password"
                             type="password"
                             required
@@ -145,12 +194,12 @@ const Login = () => {
                       </p>
 
                       <div className="mt-4 rounded-sm overflow-clip transition transform duration-300 hover:scale-101 flex w-full text-center">
-                        <Link
-                          href="/"
+                        <button
+                          type="submit"
                           className="bg-[#115E59] w-full py-2 text-white cursor-pointer "
                         >
                           Sign In
-                        </Link>
+                        </button>
                       </div>
                     </form>
                     {/* social login */}

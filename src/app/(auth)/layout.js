@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import { usePathname } from "next/navigation";
+import StoreProvider from "@/app/StoreProvider";
 
 const AuthLayout = ({ children }) => {
   const pathname = usePathname();
@@ -15,15 +16,17 @@ const AuthLayout = ({ children }) => {
   return (
     <html>
       <body>
-        <Toaster position="top-right" richColors />
+        <StoreProvider>
+          <Toaster position="top-right" richColors />
 
-        {/* Navbar conditionally show */}
-        {!hideLayout && <Navbar />}
+          {/* Navbar conditionally show */}
+          {!hideLayout && <Navbar />}
 
-        <div>{children}</div>
+          <div>{children}</div>
 
-        {/* Footer conditionally show */}
-        {!hideLayout && <Footer />}
+          {/* Footer conditionally show */}
+          {!hideLayout && <Footer />}
+        </StoreProvider>
       </body>
     </html>
   );

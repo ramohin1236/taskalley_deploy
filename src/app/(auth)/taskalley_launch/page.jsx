@@ -5,7 +5,6 @@ import image1 from "../../../../public/img1.png";
 import image2 from "../../../../public/img2.png";
 import image3 from "../../../../public/img3.png";
 import image4 from "../../../../public/img4.png";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import roketAnimation from "@/../public/rocket launch.json";
 import main_logo from "../../../../public/main_logo_svg.svg";
 import HowWorks from "@/components/home/HowWorks";
@@ -16,7 +15,7 @@ import Hero from "../../../../public/laptop.svg";
 import all_icon from "../../../../public/all_icon.png";
 import Link from "next/link";
 import { baseUrl } from "../../../../utils/baseUrl";
-import Swal from "sweetalert2";
+
 
 import { toast } from "sonner";
 
