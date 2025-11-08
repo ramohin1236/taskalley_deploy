@@ -14,7 +14,8 @@ export const makeStore = () =>
       [authentication.reducerPath]: authentication.reducer,
       [categoryApi.reducerPath]: categoryApi.reducer,
       [taskApi.reducerPath]: taskApi.reducer,
-      [serviceApi.reducerPath]: serviceApi.reducer
+      [serviceApi.reducerPath]: serviceApi.reducer,
+ 
     },
     middleware:(getDefaultMiddleware) => getDefaultMiddleware()
     .concat(
@@ -22,7 +23,7 @@ export const makeStore = () =>
       authentication.middleware,
       categoryApi.middleware,
       taskApi.middleware,
-      serviceApi.middleware
+      serviceApi.middleware,
     ),
     devTools: process.env.NODE_ENV !== 'production',
   });

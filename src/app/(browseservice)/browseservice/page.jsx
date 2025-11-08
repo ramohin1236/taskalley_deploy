@@ -1,11 +1,5 @@
 import React from "react";
-import { LuMapPin } from "react-icons/lu";
-import { SlCalender } from "react-icons/sl";
-import { IoTimerOutline } from "react-icons/io5";
-import ServiceCard from "@/components/browseservice/ServiceCard";
-import userImage from "../../../../public/task_img.png";
 import GoogleMap from "@/components/browseservice/GoogleMap";
-import Filter from "@/components/browseservice/Filter";
 
 
 const BrowseService = () => {

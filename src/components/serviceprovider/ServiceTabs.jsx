@@ -1,116 +1,121 @@
-"use client";
-import React, { useState } from "react";
-import { Star } from "lucide-react";
+// components/serviceprovider/ServiceTabs.jsx
+import { CheckCircle } from "lucide-react";
+import React from "react";
 
-const ServiceTabs = () => {
-  const [activeTab, setActiveTab] = useState("Description");
+
+const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
+  const tabs = [
+    { id: "Description", label: "Description" },
+    { id: "Details", label: "Service Details" },
+    { id: "Reviews", label: "Reviews" },
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "Description":
+        return (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Service Description</h3>
+            <p className="text-gray-700 leading-relaxed">
+              {service?.description || "No description available."}
+            </p>
+          </div>
+        );
+
+      case "Details":
+        return (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900">Service Details</h3>
+            
+            {/* Service Features */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3">
+                <Tool className="w-5 h-5 text-[#115e59]" />
+                <div>
+                  <p className="font-medium">Tools Provided</p>
+                  <p className="text-sm text-gray-600">
+                    {service?.toolsProvided ? "Yes" : "No"}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <CheckCircle className="w-5 h-5 text-[#115e59]" />
+                <div>
+                  <p className="font-medium">On-site Support</p>
+                  <p className="text-sm text-gray-600">
+                    {service?.onSiteSupport ? "Yes" : "No"}
+                  </p>
+                </div>
+              </div>
+              
+              {service?.languages && service.languages.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <Languages className="w-5 h-5 text-[#115e59]" />
+                  <div>
+                    <p className="font-medium">Languages</p>
+                    <p className="text-sm text-gray-600">
+                      {service.languages.join(", ")}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Availability */}
+            {service?.availability && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Availability</h4>
+                <p className="text-gray-700">{service.availability}</p>
+              </div>
+            )}
+          </div>
+        );
+
+      case "Reviews":
+        return (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
+            <p className="text-gray-600">
+              {service?.totalReviews 
+                ? `This service has ${service.totalReviews} reviews.`
+                : "No reviews yet."
+              }
+            </p>
+            {/* You can add actual reviews here when available */}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
     <div>
-      {/* Tabs */}
-      <div className="flex gap-4 border-b border-gray-200 mb-6">
-        {["Description", "Reviews"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 font-medium border-b-2 transition-colors ${
-              activeTab === tab
-                ? "border-[#00786f] text-[#00786f] cursor-pointer"
-                : "border-transparent text-[#00786f] cursor-pointer"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+      {/* Tab Headers */}
+      <div className="border-b border-gray-200 mb-6">
+        <div className="flex space-x-8">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === tab.id
+                  ? "border-[#115e59] text-[#115e59]"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Tab Content */}
-      {activeTab === "Description" && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Description :-
-          </h3>
-          <p className="text-gray-700 mb-6 leading-relaxed">
-            —Delivering professional, reliable, and efficient service in your
-            area, this provider brings a strong reputation and years of
-            experience. Whether it's home maintenance, repairs, or skilled
-            labor, you'll benefit from clean execution, attention to detail, and
-            a commitment to customer satisfaction.
-          </p>
-
-          {/* Service Details */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-              📋 Service Details
-            </h4>
-            <div className="space-y-2 text-sm text-gray-600">
-              <div>
-                <span className="font-medium">Category:</span> Home Cleaning &
-                Maintenance
-              </div>
-              <div>
-                <span className="font-medium">Experience:</span> 5+ Years
-              </div>
-              <div>
-                <span className="font-medium">Location:</span> Manhattan, New
-                York
-              </div>
-              <div>
-                <span className="font-medium">Availability:</span> 7 Days a Week
-              </div>
-              <div>
-                <span className="font-medium">On-Site Support:</span> Yes
-              </div>
-              <div>
-                <span className="font-medium">Tools Provided:</span> Yes
-              </div>
-              <div>
-                <span className="font-medium">Certified & Verified:</span> ✅
-              </div>
-              <div>
-                <span className="font-medium">Customer Rating:</span> ⭐ 4.8
-                (350+ Reviews)
-              </div>
-              <div>
-                <span className="font-medium">Languages Spoken:</span> English,
-                Spanish
-              </div>
-              <div>
-                <span className="font-medium">Price Range:</span> Starting from
-                ₦50
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === "Reviews" && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Customer Reviews
-          </h3>
-          <div className="space-y-4">
-            {[1, 2, 3].map((review) => (
-              <div key={review} className="border-b border-gray-200 pb-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-500">2 days ago</span>
-                </div>
-                <p className="text-gray-700 text-sm">
-                  Excellent service! Very professional and thorough cleaning.
-                  Highly recommended.
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="min-h-[200px]">
+        {renderTabContent()}
+      </div>
     </div>
   );
 };

@@ -2,7 +2,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getTokens } from "@/utils/auth";
 import baseUrl from "../../../../utils/baseUrl";
 
-
 const taskApi = createApi({
   reducerPath: "taskApi",
   baseQuery: fetchBaseQuery({
@@ -29,10 +28,25 @@ const taskApi = createApi({
     }),
 
     getAllTasks: builder.query({
-      query: () => ({
-        url: "/task/all-tasks",
-        method: "GET",
-      }),
+      query: ({
+        page = 1,
+        limit = 10,
+        searchTerm = "",
+        category = "",
+        sortBy = "",
+      }) => {
+        const params = new URLSearchParams();
+        params.append("page", page);
+        params.append("limit", limit);
+        if (searchTerm) params.append("searchTerm", searchTerm);
+        if (category) params.append("category", category);
+        if (sortBy) params.append("sortBy", sortBy);
+
+        return {
+          url: `/task/all-task?${params.toString()}`,
+          method: "GET",
+        };
+      },
       providesTags: ["Task"],
     }),
 

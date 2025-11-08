@@ -31,13 +31,14 @@ const serviceApi = createApi({
       providesTags: ["Service"],
     }),
 
-    getServiceById: builder.query({
+     getServiceById: builder.query({
       query: (id) => ({
-        url: `/service/${id}`,
+        url: `/service/get-single-service/${id}`,
         method: "GET",
       }),
       providesTags: ["Service"],
     }),
+  
   }),
 });
 
