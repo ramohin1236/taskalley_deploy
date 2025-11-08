@@ -5,19 +5,21 @@ import HowWorks from "@/components/home/HowWorks";
 import PopularCategory from "@/components/home/PopularCategory";
 import PopularService from "@/components/home/PopularService";
 import Servify from "@/components/home/Servify";
-import React from "react";
+import MainLayout from "../main-layout";
 
 const HomePage = () => {
   return (
-    <div>
-      <HeroSection />
-      <PopularCategory />
-      <PopularService />
-      <HowWorks />
-      <Servify />
-      <CustomerReview />
-      <Cta />
-    </div>
+    <MainLayout>
+      <div>
+        <HeroSection />
+        <PopularCategory />
+        <PopularService />
+        <HowWorks />
+        <Servify />
+        <CustomerReview />
+        <Cta />
+      </div>
+    </MainLayout>
   );
 };
 

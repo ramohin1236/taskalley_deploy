@@ -48,7 +48,7 @@ const VerifyReg = () => {
 
       const formData = new FormData();
       formData.append('city', data.city);
-      formData.append('address', data.address);
+      formData.append('street', data.street);
       if (selectedFile) {
         formData.append('address_document', selectedFile);
       }
@@ -186,8 +186,8 @@ const VerifyReg = () => {
                         </label>
                         <div className="relative flex items-center">
                           <input
-                            {...register("address", { required: "Street address is required" })}
-                            name="address"
+                            {...register("street", { required: "Street address is required" })}
+                            name="street"
                             type="text"
                             required
                             className="w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600"

@@ -1,121 +1,142 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, Star, ChevronDown, ChevronUp } from "lucide-react";
 import FilterSection from "@/components/serviceprovider/FilterSection";
-import CheckboxFilter from "@/components/serviceprovider/CheckboxFilter";
-
-import ai from "../../../../public/ai.png";
+import RadioFilter from "@/components/serviceprovider/RadioFilter"; 
+import { useGetAllServicesQuery } from "@/lib/features/service/serviceApi";
+import { useGetAllCategoriesQuery } from "@/lib/features/category/categoryApi";
 import ServiceCard from "@/components/serviceprovider/ServiceCard";
 import Link from "next/link";
 
 const ServiceListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState(["cleaning"]);
+  const [selectedCategory, setSelectedCategory] = useState("all"); 
   const [selectedSortBy, setSelectedSortBy] = useState("relevance");
   const [categoryFilterOpen, setCategoryFilterOpen] = useState(true);
   const [sortByOpen, setSortByOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const serviceCategories = [
-    { id: "cleaning", label: "Cleaning" },
-    { id: "plumbing", label: "Plumbing" },
-    { id: "electrical", label: "Electrical" },
-    { id: "appliance-repair", label: "Appliance Repair" },
-    { id: "furniture-assembly", label: "Furniture Assembly" },
-    { id: "painting", label: "Painting" },
-    { id: "moving-help", label: "Moving Help" },
-    { id: "ac-installation", label: "AC Installation" },
-  ];
+  const limit = 8; 
+
+  const { data: categoriesData, isLoading: categoriesLoading } = useGetAllCategoriesQuery();
+  
+  const { data: servicesData, isLoading: servicesLoading, error } = useGetAllServicesQuery({
+    page: currentPage,
+    limit: limit,
+    searchTerm: debouncedSearch,
+    category: selectedCategory !== "all" ? selectedCategory : "", 
+    sortBy: selectedSortBy,
+  });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); 
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const serviceCategories = categoriesData?.data?.result 
+    ? [
+        { id: "all", label: "All Categories" }, 
+        ...categoriesData.data.result.map(cat => ({
+          id: cat._id,
+          label: cat.name
+        }))
+      ]
+    : [{ id: "all", label: "All Categories" }];
 
   const sortOptions = [
     { id: "relevance", label: "Relevance" },
     { id: "price-low", label: "Price: Low to High" },
     { id: "price-high", label: "Price: High to Low" },
-    { id: "rating", label: "Highest Rated" },
-    { id: "newest", label: "Newest First" },
-  ];
-
-  const services = [
-    {
-      id: 1,
-      title: "Office Cleaning Service",
-      category: "Cleaning",
-      location: "New York, USA",
-      rating: 4.5,
-      image: { ai },
-      price: null,
-    },
-    {
-      id: 2,
-      title: "Office Cleaning Service",
-      category: "Cleaning",
-      location: "New York, USA",
-      rating: 4.5,
-      image: { ai },
-      price: null,
-    },
-    {
-      id: 3,
-      title: "Window Washing (3 BHK)",
-      category: "Cleaning",
-      location: "New York, USA",
-      rating: 4.5,
-      image: { ai },
-      price: null,
-    },
-    {
-      id: 4,
-      title: "Window Washing (3 BHK)",
-      category: "Cleaning",
-      location: "New York, USA",
-      rating: 4.5,
-      image: { ai },
-      price: null,
-    },
+    // { id: "rating", label: "Highest Rated" },
+    // { id: "newest", label: "Newest First" },
   ];
 
   const handleCategoryChange = (categoryId) => {
-    setSelectedCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
-    );
+    setSelectedCategory(categoryId);
+    setCurrentPage(1); 
   };
 
   const handleSortChange = (sortId) => {
     setSelectedSortBy(sortId);
+    setCurrentPage(1); 
   };
 
-  const filteredServices = services.filter((service) => {
-    const matchesSearch =
-      service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      service.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory =
-      selectedCategories.length === 0 ||
-      selectedCategories.includes(
-        service.category.toLowerCase().replace(" ", "-")
-      );
-    return matchesSearch && matchesCategory;
-  });
+  const handleNextPage = () => {
+    if (servicesData?.data?.meta && currentPage < servicesData.data.meta.totalPage) {
+      setCurrentPage(prev => prev + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  };
+
+  const handlePageClick = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Loading state
+  if (servicesLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="project_container mx-auto px-6 py-8">
+          <div className="grid lg:grid-cols-4 gap-8">
+            <div className="col-span-1">
+              <div className="bg-white rounded-lg shadow-sm p-6 hidden lg:block animate-pulse">
+                <div className="h-6 bg-gray-300 rounded mb-4"></div>
+                <div className="space-y-2">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="col-span-3">
+              <div className="h-12 bg-gray-300 rounded mb-8"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-lg shadow-sm p-4 animate-pulse">
+                    <div className="h-48 bg-gray-300 rounded mb-4"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const services = servicesData?.data?.result || [];
+  const meta = servicesData?.data?.meta || {};
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="project_container mx-auto px-6 py-8">
-        {/* Main Content */}
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar Filters */}
           <div className="col-span-1">
             <div className="bg-white rounded-lg shadow-sm p-6 hidden lg:block">
-              {/* Service Category Filter */}
               <div>
                 <FilterSection
                   title="Select Service Category"
                   isOpen={categoryFilterOpen}
                   onToggle={() => setCategoryFilterOpen(!categoryFilterOpen)}
                 >
-                  <CheckboxFilter
+                  <RadioFilter 
                     options={serviceCategories}
-                    selectedOptions={selectedCategories}
+                    selectedOption={selectedCategory}
                     onChange={handleCategoryChange}
+                    name="service-category"
                   />
                 </FilterSection>
               </div>
@@ -126,24 +147,12 @@ const ServiceListing = () => {
                   isOpen={sortByOpen}
                   onToggle={() => setSortByOpen(!sortByOpen)}
                 >
-                  <div className="space-y-2">
-                    {sortOptions.map((option) => (
-                      <label
-                        key={option.id}
-                        className="flex items-center gap-3 cursor-pointer"
-                      >
-                        <input
-                          type="radio"
-                          name="sortBy"
-                          value={option.id}
-                          checked={selectedSortBy === option.id}
-                          onChange={() => handleSortChange(option.id)}
-                          className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
-                        />
-                        <span className="text-gray-700">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
+                  <RadioFilter 
+                    options={sortOptions}
+                    selectedOption={selectedSortBy}
+                    onChange={handleSortChange}
+                    name="sort-by"
+                  />
                 </FilterSection>
               </div>
             </div>
@@ -160,17 +169,80 @@ const ServiceListing = () => {
                   placeholder="Search your service"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#115e59] focus:border-transparent"
                 />
               </div>
             </div>
+
+            {/* Services Count */}
+            <div className="mb-4 text-sm text-gray-600">
+              Showing {services.length} of {meta.total || 0} services
+              {selectedCategory !== "all" && ` in ${serviceCategories.find(cat => cat.id === selectedCategory)?.label}`}
+              {debouncedSearch && ` for "${debouncedSearch}"`}
+            </div>
+
             {/* Services Grid */}
-            {filteredServices.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredServices.map((service) => (
-                  <Link key={service.id} href='/servicedetails'><ServiceCard  service={service} /></Link>
-                ))}
-              </div>
+            {services.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  {services.map((service) => (
+                    <Link key={service._id} href={`/service-listing/${service._id}`}>
+                      <ServiceCard service={service} />
+                    </Link>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {meta.totalPage > 1 && (
+                  <div className="flex justify-center items-center space-x-2">
+                    <button
+                      onClick={handlePrevPage}
+                      disabled={currentPage === 1}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+
+                    {[...Array(meta.totalPage)].map((_, index) => {
+                      const pageNumber = index + 1;
+                      // Show only nearby pages
+                      if (
+                        pageNumber === 1 ||
+                        pageNumber === meta.totalPage ||
+                        (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                      ) {
+                        return (
+                          <button
+                            key={pageNumber}
+                            onClick={() => handlePageClick(pageNumber)}
+                            className={`px-3 py-2 border text-sm font-medium rounded-md ${
+                              currentPage === pageNumber
+                                ? "bg-green-600 text-white border-green-600"
+                                : "border-gray-300 text-gray-500 hover:bg-gray-50"
+                            }`}
+                          >
+                            {pageNumber}
+                          </button>
+                        );
+                      } else if (
+                        pageNumber === currentPage - 2 ||
+                        pageNumber === currentPage + 2
+                      ) {
+                        return <span key={pageNumber} className="px-2 text-gray-500">...</span>;
+                      }
+                      return null;
+                    })}
+
+                    <button
+                      onClick={handleNextPage}
+                      disabled={currentPage === meta.totalPage}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-12">
                 <div className="text-gray-400 mb-4">
@@ -180,7 +252,9 @@ const ServiceListing = () => {
                   No services found
                 </h3>
                 <p className="text-gray-500">
-                  Try adjusting your search or filter criteria
+                  {debouncedSearch || selectedCategory !== "all" 
+                    ? "Try adjusting your search or filter criteria" 
+                    : "No services available at the moment"}
                 </p>
               </div>
             )}

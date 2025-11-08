@@ -3,9 +3,7 @@ import React from "react";
 const StepTimeline = ({ 
   steps, 
   currentStep, 
-  className = "", 
-//   showBorder = false,
-//   borderColor = "border-red-500" 
+  className = ""
 }) => (
   <div className="hidden lg:block w-64 flex-shrink-0 className">
     <div className={`bg-white rounded-lg p-6 sticky top-6 `}>

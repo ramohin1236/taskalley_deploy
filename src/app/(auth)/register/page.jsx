@@ -9,10 +9,13 @@ import { FcGoogle } from "react-icons/fc";
 import { FaApple } from "react-icons/fa6";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const Register = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get('role') || 'customer';
+  const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: { phone: '+' }
   });
@@ -20,19 +23,34 @@ const Register = () => {
   const [registerUser, { isLoading, isError, isSuccess, error }] = useRegisterMutation();
 
   const onSubmit = async (data) => {
-    try {
-      const payload = { ...data, role };
-      const result = await registerUser(payload).unwrap();
-      console.log("Registration successful result:", result);
-      if (result.success) {
-        alert(
-          "Registration successful! Please check your email to verify your account."
-        );
-      }
-    } catch (err) {
-      console.error("Registration failed:", err);
+  try {
+    const payload = { ...data, role };
+    const result = await registerUser(payload).unwrap();
+    console.log("Registration successful result:", result);
+    if (result.success) {
+      localStorage.setItem('email', data.email); 
+      
+      toast.success("Registration successful! Please check your email to verify your account.", {
+        style: {
+          backgroundColor: "#d1fae5",
+          color: "#065f46",
+          borderLeft: "6px solid #10b981",
+        }
+      });
+      
+      router.push("/verify_register_user");
     }
-  };
+  } catch (err) {
+    console.error("Registration failed:", err);
+    toast.error("Registration failed. Please try again.", {
+      style: {
+        backgroundColor: "#fee2e2",
+        color: "#991b1b",
+        borderLeft: "6px solid #dc2626",
+      }
+    });
+  }
+};
 
   return (
     <section className="overflow-y-scroll">

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdMenu, MdClose } from "react-icons/md";
@@ -13,16 +14,37 @@ import { PiSignOutBold } from "react-icons/pi";
 
 const Navbar = () => {
   const pathname = usePathname();
-  // "service_provider", "guest", "task_provider"
-  const [role, setRole] = useState("guest");
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [mounted, setMounted] = useState(false); 
 
-  // Mobile profile toggle
   const [profileOpen, setProfileOpen] = useState(false);
 
- 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY, mounted]);
+
   const getLinkClass = (path, isButton = false) => {
     const isActive = pathname === path;
     
@@ -69,9 +91,6 @@ const Navbar = () => {
       <Link href="/service-listing" className={getLinkClass("/service-listing")}>
         Browse Services
       </Link>
-      {/* <Link href="/list_my_service" className={getLinkClass("/list_my_service")}>
-        List A Service
-      </Link> */}
     </div>
   );
 
@@ -86,37 +105,35 @@ const Navbar = () => {
       <Link href="/list_my_service" className={getLinkClass("/list_my_service")}>
         My Services
       </Link>
-      
     </div>
   );
 
   // Auth buttons with active states
-const guestAuthButtons = (
-  <div className="flex flex-col lg:items-center lg:flex-row gap-3">
-    <Link
-      href="/login"
-      className={`px-6 py-2 border-2 border-[#115e59] rounded-md transition ${
-        pathname === "/login"
-          ? "bg-[#115e59] text-white"
-          : "text-[#115e59] hover:bg-[#115e59] hover:text-white"
-      }`}
-    >
-      Log In
-    </Link>
+  const guestAuthButtons = (
+    <div className="flex flex-col lg:items-center lg:flex-row gap-3">
+      <Link
+        href="/login"
+        className={`px-6 py-2 border-2 border-[#115e59] rounded-md transition ${
+          pathname === "/login"
+            ? "bg-[#115e59] text-white"
+            : "text-[#115e59] hover:bg-[#115e59] hover:text-white"
+        }`}
+      >
+        Log In
+      </Link>
 
-    <Link
-      href="/role"
-      className={`px-6 py-2 border-2 border-[#115e59] rounded-md transition ${
-        pathname !== "/login"
-          ? "bg-[#115e59] text-white"
-          : "text-[#115e59] hover:bg-[#115e59] hover:text-white"
-      }`}
-    >
-      Register
-    </Link>
-  </div>
-);
-
+      <Link
+        href="/role"
+        className={`px-6 py-2 border-2 border-[#115e59] rounded-md transition ${
+          pathname !== "/login"
+            ? "bg-[#115e59] text-white"
+            : "text-[#115e59] hover:bg-[#115e59] hover:text-white"
+        }`}
+      >
+        Register
+      </Link>
+    </div>
+  );
 
   // Profile dropdown link class
   const getProfileLinkClass = (path) => {
@@ -124,6 +141,24 @@ const guestAuthButtons = (
       ? "flex items-center gap-2 text-lg text-[#115e59] font-semibold px-3 py-2 border-b-2 border-[#115e59]"
       : "flex items-center gap-2 text-lg hover:text-[#115e59] px-3 py-2 hover:border-b-2 hover:border-[#115e59] transition-all";
   };
+
+  // Determine role safely
+  const role = mounted && isAuthenticated ? user?.role : "guest";
+
+  // Don't render anything until mounted to avoid hydration mismatch
+  if (!mounted) {
+    return (
+      <nav className="w-full bg-white shadow-sm sticky top-0 z-50 py-2">
+        <div className="max-w-[1240px] mx-auto px-6 py-3 flex items-center justify-between">
+          {/* Static logo for initial render */}
+          <Link href="/" className="flex items-center gap-2">
+            <div className="h-10 lg:h-12 w-32 bg-gray-200 animate-pulse rounded"></div>
+          </Link>
+          <div className="w-8 h-8 bg-gray-200 animate-pulse rounded lg:hidden"></div>
+        </div>
+      </nav>
+    );
+  }
 
   //  Desktop profile (daisyUI)
   const desktopProfileDropdown = (
@@ -137,18 +172,20 @@ const guestAuthButtons = (
           <img
             alt="User Avatar"
             src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+            className="w-full h-full object-cover"
           />
         </div>
       </div>
       <ul
         tabIndex={0}
-        className="menu menu-sm dropdown-content rounded-box mt-3 px-4 pr-10 py-4 shadow flex flex-col gap-3 bg-white"
+        className="menu menu-sm dropdown-content rounded-box mt-3 px-4 pr-10 py-4 shadow flex flex-col gap-3 bg-white z-50"
       >
         <div className="flex items-center gap-3 pr-12 pb-6 border-b">
           <div className="w-16 h-16 overflow-hidden rounded-xl">
             <img
               alt="Profile"
               src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+              className="w-full h-full object-cover"
             />
           </div>
           <div>
@@ -199,6 +236,7 @@ const guestAuthButtons = (
           <img
             alt="User Avatar"
             src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+            className="w-full h-full object-cover"
           />
         </div>
         <span className="font-medium">My Account</span>
@@ -269,7 +307,7 @@ const guestAuthButtons = (
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center gap-2">
           {role === "guest" && guestLinks}
-          {role === "task_provider" && taskProviderLinks}
+          {role === "customer" && taskProviderLinks}
           {role === "service_provider" && serviceProviderLinks}
         </div>
 
@@ -299,11 +337,13 @@ const guestAuthButtons = (
             <div className="pt-4 border-t border-gray-100 mt-4">{guestAuthButtons}</div>
           </>
         )}
-        {role === "task_provider" && taskProviderLinks}
-        {role === "service_provider" && serviceProviderLinks}
-
-        {/* Mobile Profile */}
-        {role !== "guest" && mobileProfileDropdown}
+        {(role === "customer" || role === "service_provider") && (
+          <>
+            {role === "customer" && taskProviderLinks}
+            {role === "service_provider" && serviceProviderLinks}
+            {mobileProfileDropdown}
+          </>
+        )}
       </div>
     </nav>
   );

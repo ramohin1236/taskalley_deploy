@@ -2,26 +2,27 @@
 import registration_img from "../../../../public/login_page_image.png";
 import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import { useVerifyResetOtpMutation } from "@/lib/features/auth/authApi";
-import { useSelector } from "react-redux";
+import { useVerifyUserCodeMutation } from "@/lib/features/auth/authApi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const VerfiyOtp = () => {
+const VerifyUserCode = () => {
   const [otp, setOtp] = useState(Array(5).fill("")); 
+  const [email, setEmail] = useState(""); 
   const inputRefs = useRef([]);
   const router = useRouter();
   
+  const [verifyUserCode, { isLoading, isError, error, isSuccess }] = useVerifyUserCodeMutation();
 
-  const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const userEmail = user?.email;
-  
-  const [verifyResetOtp, { isLoading, isError, error, isSuccess }] = useVerifyResetOtpMutation();
   useEffect(() => {
-    console.log("Logged in user:", user);
-    console.log("User email:", userEmail);
-    console.log("Is authenticated:", isAuthenticated);
-  }, [user, userEmail, isAuthenticated]);
+    
+    const userEmail = localStorage.getItem('email');
+    if (userEmail) {
+      setEmail(userEmail);
+    }
+    
+    console.log("Email from localStorage:", userEmail);
+  }, []);
 
   const handleKeyDown = (e) => {
     if (
@@ -79,49 +80,35 @@ const VerfiyOtp = () => {
   const handleVerify = async (e) => {
     e.preventDefault();
     
-    // Check if user is authenticated and has email
-    if (!isAuthenticated || !userEmail) {
-      toast.error("User not authenticated. Please login again.", {
-        style: {
-          backgroundColor: "#fee2e2",
-          color: "#991b1b",
-          borderLeft: "6px solid #dc2626",
-        },
-      });
+    
+    if (!email) {
+      toast.error("Email not found. Please sign up again.");
       return;
     }
 
-    const resetCode = otp.join("");
+    const verifyCode = otp.join("");
+    console.log("Verification Code:", verifyCode);
     
-    console.log("Verifying OTP for user email:", userEmail);
-    console.log("OTP Code:", resetCode);
+    console.log("Verifying User Code for email:", email);
+    console.log("Verification Code:", verifyCode);
     
     try {
-      const result = await verifyResetOtp({
-        email: userEmail, // Use logged in user's email
-        resetCode: parseInt(resetCode)
+      const result = await verifyUserCode({
+        email: email, 
+        verifyCode: parseInt(verifyCode)
       }).unwrap();
       
-      console.log("OTP verified successfully:", result);
-      toast.success("OTP verified successfully!", {
-        style: {
-          backgroundColor: "#d1fae5",
-          color: "#065f46",
-          borderLeft: "6px solid #10b981",
-        },
-      });
+      console.log("User verification successful:", result);
+      toast.success("Account verified successfully!");
       
-      // router.push("/reset-password");
+      
+      localStorage.removeItem('email');
+      
+      router.push("/login"); 
       
     } catch (err) {
-      console.error("Failed to verify OTP:", err);
-      toast.error(err?.data?.message || "Invalid OTP. Please try again.", {
-        style: {
-          backgroundColor: "#fee2e2",
-          color: "#991b1b",
-          borderLeft: "6px solid #dc2626",
-        },
-      });
+      console.error("Failed to verify user code:", err);
+      toast.error(err?.data?.message || "Invalid verification code. Please try again.");
     }
   };
 
@@ -129,7 +116,6 @@ const VerfiyOtp = () => {
     <section className="">
       <div className="max-w-[1100px] mx-auto h-[1200px] flex items-center justify-center max-h-screen">
         <div className="flex items-center justify-center gap-8 bg-[#F8FAFC] rounded-sm overflow-clip md:shadow-2xl">
-          {/* Left Side - Images */}
           <div className="hidden md:block overflow-hidden w-full h-full">
             <div className="w-auto">
               <Image
@@ -140,32 +126,25 @@ const VerfiyOtp = () => {
             </div>
           </div>
 
-          {/* Right Side - Role Selection */}
           <div className="flex w-full items-center">
             <div>
               <div className="flex flex-col items-center justify-center py-6">
                 <div className="w-full">
                   <div className="p-6 sm:p-8">
-                    <h1 className="text-[#394352] text-3xl font-semibold my-4">
-                      Verify your OTP
+                    <h1 className="text-[#394352] text-3xl font-semibold my-4 text-center w-full">
+                      Verify Your Account
                     </h1>
-                    <p className="text-[#1F2937]">
-                      Please enter the code we've sent to your phone number
-                      {userEmail && (
+                    <p className="text-[#1F2937] text-center">
+                      Please enter the verification code sent to your email
+                      {email && (
                         <span className="block text-sm text-gray-600 mt-1">
-                          (Verifying for: {userEmail})
+                          ({email})
                         </span>
                       )}
                     </p>
 
-                    {/* User not authenticated warning */}
-                    {!isAuthenticated && (
-                      <div className="mt-4 p-3 bg-yellow-100 text-yellow-700 rounded-md">
-                        Please login to verify OTP
-                      </div>
-                    )}
+                  
 
-                    {/* -------------------form------------------------------ */}
                     <div className="flex items-center justify-center py-4">
                       <form id="otp-form" className="flex gap-2">
                         {otp.map((digit, index) => (
@@ -188,10 +167,19 @@ const VerfiyOtp = () => {
                     <div className="mt-4 flex w-full text-center rounded-sm overflow-clip transition transform duration-300 hover:scale-101">
                       <button
                         onClick={handleVerify}
-                        disabled={isLoading || otp.some(digit => digit === "") || !isAuthenticated}
+                        disabled={isLoading || otp.some(digit => digit === "") || !email} 
                         className="bg-[#115E59] w-full py-2 text-white cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
                       >
-                        {isLoading ? "Verifying..." : "Verify"}
+                        {isLoading ? "Verifying..." : "Verify Account"}
+                      </button>
+                    </div>
+
+                    <div className="mt-4 text-center">
+                      <button 
+                        type="button" 
+                        className="text-[#115E59] hover:underline"
+                      >
+                        Didn't receive code? Resend
                       </button>
                     </div>
                   </div>
@@ -205,4 +193,4 @@ const VerfiyOtp = () => {
   );
 };
 
-export default VerfiyOtp;
+export default VerifyUserCode;

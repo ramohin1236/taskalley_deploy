@@ -13,7 +13,7 @@ const CheckboxFilter = ({ options, selectedOptions, onChange }) => {
              
             checked={selectedOptions.includes(option.id)}
             onChange={() => onChange(option.id)}
-            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+            className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500 "
           />
           <span className="text-gray-700">{option.label}</span>
         </label>
