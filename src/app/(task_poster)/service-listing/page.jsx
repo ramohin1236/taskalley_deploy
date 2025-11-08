@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, MapPin, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { Search } from "lucide-react";
 import FilterSection from "@/components/serviceprovider/FilterSection";
 import RadioFilter from "@/components/serviceprovider/RadioFilter"; 
 import { useGetAllServicesQuery } from "@/lib/features/service/serviceApi";
@@ -11,7 +11,7 @@ import Link from "next/link";
 const ServiceListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all"); 
-  const [selectedSortBy, setSelectedSortBy] = useState("relevance");
+  const [selectedSortBy, setSelectedSortBy] = useState("");
   const [categoryFilterOpen, setCategoryFilterOpen] = useState(true);
   const [sortByOpen, setSortByOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +28,18 @@ const ServiceListing = () => {
     category: selectedCategory !== "all" ? selectedCategory : "", 
     sortBy: selectedSortBy,
   });
+
+  useEffect(() => {
+    console.log(" DEBUG - API Call Parameters:", {
+      page: currentPage,
+      limit: limit,
+      searchTerm: debouncedSearch,
+      category: selectedCategory !== "all" ? selectedCategory : "",
+      sortBy: selectedSortBy
+    });
+    
+    console.log(" DEBUG - Services Data:", servicesData);
+  }, [currentPage, debouncedSearch, selectedCategory, selectedSortBy, servicesData]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -49,11 +61,11 @@ const ServiceListing = () => {
     : [{ id: "all", label: "All Categories" }];
 
   const sortOptions = [
-    { id: "relevance", label: "Relevance" },
-    { id: "price-low", label: "Price: Low to High" },
-    { id: "price-high", label: "Price: High to Low" },
-    // { id: "rating", label: "Highest Rated" },
-    // { id: "newest", label: "Newest First" },
+    { id: "", label: "Relevance" },
+    { id: "price", label: "Price: Low to High" },
+    { id: "-price", label: "Price: High to Low" },
+    { id: "-averageRating", label: "Highest Rated" },
+    { id: "-createdAt", label: "Newest First" },
   ];
 
   const handleCategoryChange = (categoryId) => {
@@ -174,11 +186,16 @@ const ServiceListing = () => {
               </div>
             </div>
 
-            {/* Services Count */}
-            <div className="mb-4 text-sm text-gray-600">
-              Showing {services.length} of {meta.total || 0} services
-              {selectedCategory !== "all" && ` in ${serviceCategories.find(cat => cat.id === selectedCategory)?.label}`}
-              {debouncedSearch && ` for "${debouncedSearch}"`}
+            {/* Services Count and Sort Info */}
+            <div className="mb-4 flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                Showing {services.length} of {meta.total || 0} services
+                {selectedCategory !== "all" && ` in ${serviceCategories.find(cat => cat.id === selectedCategory)?.label}`}
+                {debouncedSearch && ` for "${debouncedSearch}"`}
+              </div>
+              <div className="text-sm text-gray-500">
+                Sorted by: {sortOptions.find(opt => opt.id === selectedSortBy)?.label || "Relevance"}
+              </div>
             </div>
 
             {/* Services Grid */}
