@@ -85,7 +85,18 @@ const taskApi = createApi({
       },
       providesTags: ["Task"],
     }),
+        completeTask: builder.mutation({
+      query: (taskId) => ({
+        url: "/task/complete-task",
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: { taskId },
+      }),
+      invalidatesTags: ["Task"],
+    }),
   }),
+
+ 
 });
 
 export const {
@@ -93,6 +104,7 @@ export const {
   useGetAllTasksQuery,
   useGetTaskByIdQuery,
   useGetMyTasksQuery,
+  useCompleteTaskMutation
 } = taskApi;
 
 export default taskApi;

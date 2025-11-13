@@ -5,9 +5,10 @@ import PricingSection from "./PricingSection";
 import ProgressBarComponent from "./ProgressBarComponent";
 import CancellationStatusComponent from "./CancellationStatusComponent";
 import DateExtensionRequestSection from "./DateExtensionRequestSection";
+import { useCompleteTaskMutation } from "@/lib/features/task/taskApi"; // Adjust import path
+import { toast } from "sonner";
 
 // cancellationStatus should be
-
 // cancellationStatus = "in-progress"
 // cancellationStatus = "accepted"
 // cancellationStatus = "rejected"
@@ -19,6 +20,8 @@ const Progress = ({
   bidsData,
   taskDetails
 }) => {
+  const [completeTask, { isLoading: isCompleting }] = useCompleteTaskMutation();
+
   const formatDate = (date) => {
     if (!date) return "";
     try {
@@ -51,7 +54,6 @@ const Progress = ({
 
   // Progress width based on step completion
   const progressWidth = isCompleted ? "100%" : (isInProgress ? "66.67%" : "33.33%");
-
 
   // Prefer provider name; if only an ID is present, resolve via bidsData
   const assignedTo = (() => {
@@ -88,8 +90,32 @@ const Progress = ({
 
   const budget = taskDetails?.budget;
 
+  const handleMarkAsComplete = async () => {
+    if (!taskDetails?._id) {
+      toast.error("Task ID not found");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to mark this task as complete?")) {
+      return;
+    }
+
+    try {
+      const result = await completeTask(taskDetails._id).unwrap();
+      
+      if (result.success) {
+        toast.success("Task marked as complete successfully!");
+        // You might want to refetch the task data here or update the parent component
+        window.location.reload(); // Simple refresh to show updated status
+      }
+    } catch (error) {
+      console.error("Failed to complete task:", error);
+      toast.error(error?.data?.message || "Failed to mark task as complete. Please try again.");
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-12 ">
+    <div className="flex flex-col gap-12">
       {/* Task Info Section */}
       <TaskInfoSection
         assignedTo={assignedTo}
@@ -111,11 +137,32 @@ const Progress = ({
         <CancellationStatusComponent cancellationStatus={cancellationStatus} />
         <DateExtensionRequestSection extensionStatus={extensionStatus} />
       </div>
-       <div className="flex justify-start">
-          <button className="px-6 py-2.5 bg-[#115E59] hover:bg-teal-700 text-white rounded-md transition-colors font-medium cursor-pointer">
-            Mark As Complete
+
+      {/* Mark as Complete Button - Only show if task is not already completed */}
+      {!isCompleted && (
+        <div className="flex justify-start">
+          <button 
+            onClick={handleMarkAsComplete}
+            disabled={isCompleting}
+            className={`px-6 py-2.5 rounded-md transition-colors font-medium cursor-pointer ${
+              isCompleting 
+                ? "bg-gray-400 text-white cursor-not-allowed" 
+                : "bg-[#115E59] hover:bg-teal-700 text-white"
+            }`}
+          >
+            {isCompleting ? "Marking Complete..." : "Mark As Complete"}
           </button>
         </div>
+      )}
+
+      {/* Show message if task is already completed */}
+      {isCompleted && (
+        <div className="flex justify-start">
+          <div className="px-6 py-2.5 bg-green-100 text-green-800 rounded-md font-medium">
+            ✓ Task Completed
+          </div>
+        </div>
+      )}
     </div>
   );
 };
