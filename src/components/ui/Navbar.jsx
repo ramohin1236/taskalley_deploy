@@ -11,16 +11,23 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { FaMessage } from "react-icons/fa6";
 import { RiUserSettingsFill } from "react-icons/ri";
 import { PiSignOutBold } from "react-icons/pi";
+import { useAuth } from "@/components/auth/useAuth";
 
 const Navbar = () => {
   const pathname = usePathname();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [mounted, setMounted] = useState(false); 
 
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout();
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -214,9 +221,12 @@ const Navbar = () => {
           </Link>
         )}
 
-        <Link className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors" href="/login">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors w-full text-left"
+        >
           <PiSignOutBold className="text-red-500" /> Sign Out
-        </Link>
+        </button>
       </ul>
     </div>
   );
@@ -270,9 +280,12 @@ const Navbar = () => {
             </Link>
           )}
           
-          <Link className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors" href="/logout">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors w-full text-left"
+          >
             <PiSignOutBold className="text-red-500" /> Sign Out
-          </Link>
+          </button>
         </div>
       </div>
     </div>

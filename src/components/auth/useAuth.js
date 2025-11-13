@@ -11,6 +11,15 @@ export const useAuth = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    
+    // Clear refreshToken cookie
+    if (typeof document !== 'undefined') {
+      document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax';
+      if (process.env.NODE_ENV === 'production') {
+        document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax; Secure';
+      }
+    }
+    
     router.push("/login");
   };
 

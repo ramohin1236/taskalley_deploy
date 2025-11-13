@@ -69,6 +69,12 @@ const authSlice = createSlice({
       if (typeof window !== 'undefined') {
         removeTokens();
         localStorage.removeItem('isAddressProvided');
+        
+        // Clear refreshToken cookie
+        document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax';
+        if (process.env.NODE_ENV === 'production') {
+          document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax; Secure';
+        }
       }
     },
     setLoading: (state, action) => {

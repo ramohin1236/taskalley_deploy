@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { logout } from "@/lib/features/auth/authSlice";
 
-const ProtectedRoute = ({ children, requiredRole = null }) => {
+const CustomerProtectedRoute = ({ children }) => {
   const { isAuthenticated, user, isLoading } = useSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -17,24 +17,21 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
       return;
     }
 
-    // If requiredRole is specified and user role doesn't match, logout and redirect to login
-    if (!isLoading && isAuthenticated && requiredRole && user?.role !== requiredRole) {
+    // If authenticated but not a customer, logout and redirect to login
+    if (!isLoading && isAuthenticated && user?.role !== 'customer') {
       // Logout the user
       dispatch(logout());
       
       // Clear refreshToken cookie
       if (typeof document !== 'undefined') {
         document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax';
-        if (process.env.NODE_ENV === 'production') {
-          document.cookie = 'refreshToken=; path=/; max-age=0; SameSite=Lax; Secure';
-        }
       }
       
       // Redirect to login
       router.push("/login");
       return;
     }
-  }, [isAuthenticated, isLoading, user, requiredRole, router, dispatch]);
+  }, [isAuthenticated, isLoading, user, router, dispatch]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -45,18 +42,13 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
     );
   }
 
-  // Don't render children if not authenticated
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  // Check role if required - if role doesn't match, don't render (logout already handled in useEffect)
-  if (requiredRole && user?.role !== requiredRole) {
+  // Don't render children if not authenticated or not a customer
+  if (!isAuthenticated || user?.role !== 'customer') {
     return null;
   }
 
   return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default CustomerProtectedRoute;
 
