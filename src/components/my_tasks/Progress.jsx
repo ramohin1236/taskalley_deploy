@@ -52,7 +52,6 @@ const Progress = ({
   // Progress width based on step completion
   const progressWidth = isCompleted ? "100%" : (isInProgress ? "66.67%" : "33.33%");
 
-  console.log("adfjadslkjfl",bidsData)
 
   // Prefer provider name; if only an ID is present, resolve via bidsData
   const assignedTo = (() => {
