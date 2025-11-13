@@ -14,7 +14,6 @@ import clsx from "clsx";
 const ServiceDetails = ({service}) => {
   const [activeTab, setActiveTab] = useState("Description");
   
- console.log(service)
   return (
     <div className="project_container mx-auto lg:p-6 overflow-clip">
       {/* Header */}

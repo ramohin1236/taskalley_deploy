@@ -1,7 +1,7 @@
 import React from "react";
 import { Calendar, MapPin, MessageCircle, User } from "lucide-react";
 
-const TaskInfoSection = () => {
+const TaskInfoSection = ({ assignedTo, location, dateLabel }) => {
   return (
     <div className="flex flex-col md:flex-row justify-between">
       {/* left side */}
@@ -12,7 +12,7 @@ const TaskInfoSection = () => {
           </div>
           <div>
             <p className="text-base md:text-xl font-semibold"> Assigned To</p>
-            <p className="text-[#6B7280] text-sm">Marvin Fey</p>
+            <p className="text-[#6B7280] text-sm">{assignedTo || "Not assigned"}</p>
           </div>
         </div>
         <div className="flex mt-8 items-center gap-3">
@@ -21,7 +21,7 @@ const TaskInfoSection = () => {
           </div>
           <div>
             <p className="text-base md:text-xl font-semibold"> Location</p>
-            <p className="text-[#6B7280] text-sm">New York, USA</p>
+            <p className="text-[#6B7280] text-sm">{location || "Location not specified"}</p>
           </div>
         </div>
         <div className="flex mt-8 items-center gap-3">
@@ -30,7 +30,7 @@ const TaskInfoSection = () => {
           </div>
           <div>
             <p className="text-base md:text-xl font-semibold">To Be Done On</p>
-            <p className="text-[#6B7280] text-sm">15 May 2020 8:00 am</p>
+            <p className="text-[#6B7280] text-sm">{dateLabel || "Schedule not set"}</p>
           </div>
         </div>
       </div>

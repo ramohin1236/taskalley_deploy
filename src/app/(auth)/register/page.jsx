@@ -26,7 +26,6 @@ const Register = () => {
   try {
     const payload = { ...data, role };
     const result = await registerUser(payload).unwrap();
-    console.log("Registration successful result:", result);
     if (result.success) {
       localStorage.setItem('email', data.email); 
       

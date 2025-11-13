@@ -10,6 +10,7 @@ const bidApi = createApi({
       const state = getState();
       const accessToken = state?.auth?.accessToken || getTokens().accessToken;
       if (accessToken) {
+        // Backend expects token without "Bearer " prefix
         headers.set("Authorization", `${accessToken}`);
       }else {
         console.log(" No access token found");
@@ -46,9 +47,11 @@ const bidApi = createApi({
     }),
 
     acceptBid: builder.mutation({
-      query: (bidId) => ({
-        url: `/bid/accept-bid/${bidId}`,
+      query: (payload) => ({
+        url: `/task/accept-TaskBy-Customer`,
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: payload, 
       }),
       invalidatesTags: ["Bid"],
     }),

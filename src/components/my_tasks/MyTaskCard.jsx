@@ -3,7 +3,6 @@ import React from "react";
 import { Clock, Home, MapPin } from "lucide-react";
 
 const MyTaskCard = ({ service }) => {
-  console.log("serrrrrvvvviiiiccceee",service);
   return (
     <div className="bg-white shadow rounded-lg p-4 sm:p-6 mb-4 border border-gray-200">
       {/* Top row */}

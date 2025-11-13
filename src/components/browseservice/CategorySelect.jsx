@@ -5,8 +5,6 @@ import React from "react";
 const CategorySelect = ({ value, onChange }) => {
   const { data, isLoading, error } = useGetAllCategoriesQuery();
   const categories = data?.data?.result;
-  console.log(error)
-  console.log(categories)
 
   if (isLoading) {
     return (

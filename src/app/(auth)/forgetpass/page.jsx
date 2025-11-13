@@ -16,7 +16,6 @@ const ForgetPassword = () => {
     e.preventDefault();
     try {
       const result = await forgetPassword({ phone }).unwrap();
-      console.log("OTP sent successfully:", result);
       if (result.success) {
         toast.success("OTP sent successfully", {
           style: {
@@ -28,7 +27,6 @@ const ForgetPassword = () => {
         router.push("/verifyotp");
       }
     } catch (err) {
-      console.error("Failed to send OTP:", err);
       toast.error("Failed to send OTP. Please try again.", {
         style: {
           backgroundColor: "#fee2e2",

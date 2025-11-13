@@ -37,10 +37,10 @@ const TaskCreationApp = () => {
     taskTitle: "",
     taskCategory: "",
     taskDescription: "",
-    taskType: "in-person", // frontend value
+    taskType: "in-person",
     location: "",
     locationCoordinates: null,
-    taskTiming: "fixed-date", // frontend value
+    taskTiming: "fixed-date", 
     preferredDate: "",
     preferredTime: "",
     budget: "",
@@ -48,7 +48,6 @@ const TaskCreationApp = () => {
     taskAttachments: [],
   });
 
-  console.log("formdata", formData);
 
   const steps = [
     { id: 0, title: "Task Overview" },
@@ -153,7 +152,6 @@ const TaskCreationApp = () => {
 
     try {
       const formDataToSend = new FormData();
-      console.log("FormData object:", formDataToSend);
 
       // Append files
       formData.taskAttachments.forEach((file) => {
@@ -185,7 +183,6 @@ const TaskCreationApp = () => {
         taskPayload.preferredTime = `0${taskPayload.preferredTime}`;
       }
 
-      console.log("Sending to API:", taskPayload);
 
       formDataToSend.append('data', JSON.stringify(taskPayload));
 

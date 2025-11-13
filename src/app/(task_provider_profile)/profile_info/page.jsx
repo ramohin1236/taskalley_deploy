@@ -10,7 +10,6 @@ import { useSelector } from "react-redux";
 const ProfileInfo = () => {
   const { data, isLoading, error } = useGetMyProfileQuery();
    const role = useSelector((state) => state?.auth?.user?.role);
-   console.log(role)
   
   // User data from API
   const userData = data?.data;

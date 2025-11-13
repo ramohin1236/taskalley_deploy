@@ -6,6 +6,8 @@ import Link from "next/link";
 import { FaStar } from "react-icons/fa6";
 import srvcporvider from "../../../public/women.svg";
 import Image from 'next/image';
+import { toast } from "sonner";
+import { useAcceptBidMutation } from '@/lib/features/bidApi/bidApi';
 
 
 
@@ -27,10 +29,44 @@ const questions = [
 ];
 
 const Bids = ({ taskDetails, bidsData }) => {
-  console.log("Bids", taskDetails)
   const info = bidsData?.data
-  console.log("infik",info)
   const [activeTab, setActiveTab] = useState("bids");
+  const [acceptBid, { isLoading: isAcceptingBid }] = useAcceptBidMutation();
+  const [taskStatus, setTaskStatus] = useState(taskDetails?.status || "OPEN_FOR_BID");
+
+  const handleAcceptBid = async (bidId) => {
+    if (taskStatus !== "OPEN_FOR_BID") {
+      toast.error("Task is no longer open for bids.");
+      return;
+    }
+    if (!confirm("Are you sure you want to accept this bid?")) return;
+    try {
+      const result = await acceptBid({ bidID: bidId }).unwrap();
+      if (result?.success) {
+        toast.success("Bid accepted successfully!", {
+          style: {
+            backgroundColor: "#d1fae5",
+            color: "#065f46",
+            borderLeft: "6px solid #10b981",
+          },
+          duration: 3000,
+        });
+        // Update local status to hide accept buttons
+        setTaskStatus(result?.data?.status || "IN_PROGRESS");
+        // Optional: refresh page or trigger parent refetch if provided in future
+      }
+    } catch (error) {
+      console.error("Failed to accept bid:", error);
+      toast.error(error?.data?.message || "Failed to accept bid. Please try again.", {
+        style: {
+          backgroundColor: "#fee2e2",
+          color: "#991b1b",
+          borderLeft: "6px solid #ef4444",
+        },
+        duration: 3000,
+      });
+    }
+  };
   return (
     <div>
       <div className="flex flex-col lg:flex-row lg:justify-between gap-8 border rounded-2xl p-6 bg-white shadow mt-8 items-center">
@@ -128,7 +164,7 @@ const Bids = ({ taskDetails, bidsData }) => {
         {activeTab === "bids" &&
           info?.map((bid) => (
             <div
-              key={bid.id}
+              key={bid._id || bid.id}
               className="flex flex-col lg:flex-row gap-4 p-4 border rounded-lg"
             >
               {/* left side */}
@@ -159,9 +195,19 @@ const Bids = ({ taskDetails, bidsData }) => {
                 </div>
                 {/* accept and chat button */}
                 <div className="flex flex-col sm:flex-row gap-3  ">
-                  <button className="px-6 py-2 border-2 border-[#115e59] text-[#115e59] rounded-md hover:bg-[#115e59] hover:text-white transition transform duration-300 cursor-pointer">
-                    Accept the Task
-                  </button>
+                  {taskStatus === "OPEN_FOR_BID" && (
+                    <button
+                      onClick={() => handleAcceptBid(bid._id)}
+                      disabled={isAcceptingBid}
+                      className={`px-6 py-2 border-2 rounded-md transition transform duration-300 ${
+                        !isAcceptingBid
+                          ? "border-[#115e59] text-[#115e59] hover:bg-[#115e59] hover:text-white cursor-pointer"
+                          : "border-gray-300 text-gray-400 cursor-not-allowed"
+                      }`}
+                    >
+                      {isAcceptingBid ? "Accepting..." : "Accept the Task"}
+                    </button>
+                  )}
                   <Link
                     href="/chat"
                     className="px-6 py-2.5 bg-[#115e59] text-white rounded-md hover:bg-teal-800 transition transform duration-300 hover:scale-105 cursor-pointer flex gap-2 items-center justify-center"

@@ -19,7 +19,6 @@ const VerifyReg = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { user, accessToken } = useAuth();
-  console.log(user,accessToken)
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [fileType, setFileType] = useState(null);
@@ -54,7 +53,6 @@ const VerifyReg = () => {
       }
 
       const result = await updateProfile(formData).unwrap();
-      console.log("Profile update successful:", result);
       
       if (result.success) {
         toast.success("Address verified successfully!");

@@ -112,7 +112,6 @@ const categories = [
 ];
 
 const PopularService = () => {
-  console.log(categories);
 
   const [activeTab, setActiveTab] = useState("Cleaning");
 

@@ -15,27 +15,97 @@ import DateExtensionRequestSection from "./DateExtensionRequestSection";
 
 const Progress = ({
   cancellationStatus = null,
-  extensionStatus = null
+  extensionStatus = null,
+  bidsData,
+  taskDetails
 }) => {
+  const formatDate = (date) => {
+    if (!date) return "";
+    try {
+      const d = new Date(date);
+      return d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch {
+      return "";
+    }
+  };
+
+  const offeredDate = taskDetails?.createdAt ? formatDate(taskDetails.createdAt) : "";
+  // Use updatedAt as proxy for acceptance start; if backend later provides a dedicated accept timestamp, replace here
+  const inProgressDate = (taskDetails?.status === "IN_PROGRESS" || taskDetails?.status === "ASSIGNED")
+    ? formatDate(taskDetails?.updatedAt || taskDetails?.createdAt)
+    : "";
+  const completedDate = taskDetails?.status === "COMPLETED" ? formatDate(taskDetails?.updatedAt) : "";
+
+  const isInProgress = taskDetails?.status === "IN_PROGRESS" || taskDetails?.status === "ASSIGNED";
+  const isCompleted = taskDetails?.status === "COMPLETED";
+
   const steps = [
-    { id: 1, label: "Offered", date: "Feb 21, 2023", completed: true },
-    { id: 2, label: "In Progress", date: "Feb 21, 2023", completed: true },
-    { id: 3, label: "Completed on", date: "", completed: false },
+    { id: 1, label: "Offered", date: offeredDate, completed: true },
+    { id: 2, label: "In Progress", date: inProgressDate, completed: isInProgress || isCompleted },
+    { id: 3, label: "Completed on", date: completedDate, completed: isCompleted },
   ];
+
+  // Progress width based on step completion
+  const progressWidth = isCompleted ? "100%" : (isInProgress ? "66.67%" : "33.33%");
+
+  console.log("adfjadslkjfl",bidsData)
+
+  // Prefer provider name; if only an ID is present, resolve via bidsData
+  const assignedTo = (() => {
+    if (taskDetails?.provider && typeof taskDetails.provider === "object" && taskDetails.provider.name) {
+      return taskDetails.provider.name;
+    }
+    const providerId = typeof taskDetails?.provider === "string" ? taskDetails.provider : null;
+    if (providerId && Array.isArray(bidsData?.data)) {
+      const matchedBid = bidsData.data.find(
+        (b) => b?.provider?._id === providerId
+      );
+      if (matchedBid?.provider?.name) {
+        return matchedBid.provider.name;
+      }
+    }
+    return "Not assigned";
+  })();
+
+  const location =
+    taskDetails?.address ||
+    taskDetails?.city ||
+    "Location not specified";
+
+  const dateLabel = taskDetails?.preferredDate
+    ? new Date(taskDetails.preferredDate).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }) + (taskDetails?.preferredTime ? ` ${taskDetails.preferredTime}` : "")
+    : "Schedule not set";
+
+  const description =
+    taskDetails?.description || "No description available.";
+
+  const budget = taskDetails?.budget;
 
   return (
     <div className="flex flex-col gap-12 ">
       {/* Task Info Section */}
-      <TaskInfoSection />
+      <TaskInfoSection
+        assignedTo={assignedTo}
+        location={location}
+        dateLabel={dateLabel}
+      />
 
       {/* Task Details Section */}
-      <TaskDetailsSection />
+      <TaskDetailsSection description={description} />
 
       {/* Pricing Section */}
-      <PricingSection />
+      <PricingSection budget={budget} />
 
       {/* Progress Bar */}
-      <ProgressBarComponent steps={steps} progressWidth="50%" />
+      <ProgressBarComponent steps={steps} progressWidth={progressWidth} />
 
       {/* Cancellation Status Section (conditional) */}
       <div>

@@ -18,7 +18,6 @@ import { useGetAllCategoriesQuery } from "@/lib/features/category/categoryApi";
 const Categories = () => {
     const { data, isLoading, error } = useGetAllCategoriesQuery();
       const category = data?.data?.result
-      console.log(category)
   return (
     <section className="project_container px-4 pt-4 pb-28">
       <div className="mb-14">

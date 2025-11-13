@@ -205,7 +205,6 @@ const ServiceCancelStatus = () => {
   const [activeTab, setActiveTab] = useState("Ongoing Tasks");
 
   const activeCategory = categories.find((cat) => cat.name === activeTab);
-  console.log(activeCategory)
 
 
   return (

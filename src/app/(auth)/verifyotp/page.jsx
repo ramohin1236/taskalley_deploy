@@ -93,8 +93,7 @@ const VerfiyOtp = () => {
 
     const resetCode = otp.join("");
     
-    console.log("Verifying OTP for user email:", userEmail);
-    console.log("OTP Code:", resetCode);
+
     
     try {
       const result = await verifyResetOtp({
@@ -102,7 +101,6 @@ const VerfiyOtp = () => {
         resetCode: parseInt(resetCode)
       }).unwrap();
       
-      console.log("OTP verified successfully:", result);
       toast.success("OTP verified successfully!", {
         style: {
           backgroundColor: "#d1fae5",

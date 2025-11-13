@@ -21,7 +21,6 @@ const VerifyUserCode = () => {
       setEmail(userEmail);
     }
     
-    console.log("Email from localStorage:", userEmail);
   }, []);
 
   const handleKeyDown = (e) => {
@@ -87,10 +86,7 @@ const VerifyUserCode = () => {
     }
 
     const verifyCode = otp.join("");
-    console.log("Verification Code:", verifyCode);
     
-    console.log("Verifying User Code for email:", email);
-    console.log("Verification Code:", verifyCode);
     
     try {
       const result = await verifyUserCode({
@@ -98,7 +94,6 @@ const VerifyUserCode = () => {
         verifyCode: parseInt(verifyCode)
       }).unwrap();
       
-      console.log("User verification successful:", result);
       toast.success("Account verified successfully!");
       
       

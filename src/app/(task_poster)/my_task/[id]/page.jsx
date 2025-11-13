@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import srvcporvider from "../../../../../public/women.svg";
 import Bids from "@/components/my_tasks/Bids";
@@ -16,7 +16,6 @@ import { useGetBidsByTaskIdQuery } from "@/lib/features/bidApi/bidApi";
 const TaskDetails = () => {
   const params = useParams();
   const taskId = params.id;
-  console.log(taskId)
   const [currentStatus, setCurrentStatus] = useState("Bids");
   const status = ["Bids", "Progress", "Completed", "Cancelled"];
   const {
@@ -24,8 +23,30 @@ const TaskDetails = () => {
     isLoading,
     error
   } = useGetTaskByIdQuery(taskId);
-  console.log(taskData?.data)
   const taskDetails = taskData?.data
+
+  // Map backend task status to UI tab
+  const tabForStatus = useMemo(() => {
+    const backendStatus = taskDetails?.status;
+    if (!backendStatus) return "Bids";
+    switch (backendStatus) {
+      case "OPEN_FOR_BID":
+        return "Bids";
+      case "ASSIGNED":
+      case "IN_PROGRESS":
+        return "Progress";
+      case "COMPLETED":
+        return "Completed";
+      case "CANCELLED":
+        return "Cancelled";
+      default:
+        return "Bids";
+    }
+  }, [taskDetails?.status]);
+
+  useEffect(() => {
+    setCurrentStatus(tabForStatus);
+  }, [tabForStatus]);
 
     const {
       data: bidsData,
@@ -33,7 +54,6 @@ const TaskDetails = () => {
       error: bidsError,
       refetch: refetchBids
     } = useGetBidsByTaskIdQuery(taskId);
-    console.log("bids data",bidsData)
 
   return (
     <div className="project_container mx-auto px-3 py-6 md:p-6">
@@ -75,8 +95,14 @@ const TaskDetails = () => {
         <p className="text-sm text-gray-500">{taskDetails?._id}</p>
 
         <div className="flex gap-3 mt-4 flex-col items-start">
-          <p className="py-2 px-4 border text-sm bg-[#FFEDD5] text-[#F97316] rounded-lg">
-            Open for {currentStatus}
+          {/* Status badge based on backend status */}
+          <p className="py-2 px-4 border text-sm rounded-lg
+            bg-[#FFEDD5] text-[#F97316]">
+            {taskDetails?.status === "OPEN_FOR_BID" && "Open for bids"}
+            {taskDetails?.status === "ASSIGNED" && "Assigned"}
+            {taskDetails?.status === "IN_PROGRESS" && "In Progress"}
+            {taskDetails?.status === "COMPLETED" && "Completed"}
+            {taskDetails?.status === "CANCELLED" && "Cancelled"}
           </p>
           <div className="flex flex-wrap gap-2">
             {
@@ -96,7 +122,7 @@ const TaskDetails = () => {
 
         <div className="mt-4">
           {currentStatus === "Bids" && <Bids taskDetails={taskDetails}  bidsData={bidsData}/>}
-          {currentStatus === "Progress" && <Progress taskDetails={taskDetails} />}
+          {currentStatus === "Progress" && <Progress taskDetails={taskDetails} bidsData={bidsData}/>}
           {currentStatus === "Completed" && <Completed taskDetails={taskDetails} />}
           {currentStatus === "Cancelled" && <Cancelled taskDetails={taskDetails} />}
         </div>

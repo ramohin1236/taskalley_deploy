@@ -30,12 +30,12 @@ import { useSelector } from "react-redux";
 
 const TaskDetails = ({ task }) => {
   const [contentTab, setContentTab] = useState("Bids");
+  const [taskStatus, setTaskStatus] = useState(task?.status || "OPEN_FOR_BID");
   const [newQuestion, setNewQuestion] = useState("");
   const [questionImage, setQuestionImage] = useState(null);
   const [questionImagePreview, setQuestionImagePreview] = useState(null);
   const [isBidModalOpen, setIsBidModalOpen] = useState(false);
   const role = useSelector((state) => state?.auth?.user?.role);
-  console.log("rollle", role)
 
   const [createBid, { isLoading: isSubmittingBid }] = useCreateBidMutation();
   const [acceptBid, { isLoading: isAcceptingBid }] = useAcceptBidMutation();
@@ -57,8 +57,6 @@ const TaskDetails = ({ task }) => {
     skip: !task?._id,
   });
 
-  console.log("Task Details Props:", task);
-  console.log("Bids Data:", bidsData);
 
   const taskData = {
     title: task?.title || "Task Title",
@@ -89,8 +87,7 @@ const TaskDetails = ({ task }) => {
   // Handle different possible response structures
   const questions = questionsData?.data || questionsData || [];
   
-  console.log("Questions Data:", questionsData);
-  console.log("Questions Array:", questions);
+
 
   const contentTabs = ["Bids", "Questions"];
 
@@ -99,7 +96,7 @@ const TaskDetails = ({ task }) => {
       const result = await createBid(bidData).unwrap();
 
       if (result.success) {
-        console.log("Bid created successfully:", result);
+       
         toast.success("Bid send successfull!", {
           style: {
             backgroundColor: "#d1fae5",
@@ -129,13 +126,18 @@ const TaskDetails = ({ task }) => {
   };
 
   const handleAcceptBid = async (bidId) => {
+    if ((taskStatus || taskData.status) !== "OPEN_FOR_BID") {
+      toast.error("Task is no longer open for bids.");
+      return;
+    }
     if (!confirm("Are you sure you want to accept this bid?")) return;
 
     try {
-      const result = await acceptBid(bidId).unwrap();
+      // API expects body: { bidID }
+      const result = await acceptBid({ bidID: bidId }).unwrap();
 
       if (result.success) {
-        console.log("Bid accepted successfully:", result);
+       
         toast.success("Bid accepted successfully!", {
           style: {
             backgroundColor: "#d1fae5",
@@ -144,6 +146,8 @@ const TaskDetails = ({ task }) => {
           },
           duration: 3000,
         });
+        // Update local task status to reflect UI change
+        setTaskStatus(result?.data?.status || "IN_PROGRESS");
         refetchBids();
       }
     } catch (error) {
@@ -285,7 +289,7 @@ const TaskDetails = ({ task }) => {
     return statusConfigs[status] || statusConfigs["OPEN_FOR_BID"];
   };
 
-  const currentStatusConfig = getStatusConfig(taskData.status);
+  const currentStatusConfig = getStatusConfig(taskStatus || taskData.status);
 
   // Format date function
   const formatTimeAgo = (dateString) => {
@@ -500,6 +504,23 @@ const TaskDetails = ({ task }) => {
                       <p className="text-sm text-gray-600 leading-relaxed mb-3">
                         {bid.details || "No message provided."}
                       </p>
+
+                      {/* Customer Accept Bid Action */}
+                      {role === "customer" && (taskStatus || taskData.status) === "OPEN_FOR_BID" && (
+                        <div className="mt-2">
+                          <button
+                            onClick={() => handleAcceptBid(bid._id)}
+                            disabled={isAcceptingBid}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                              !isAcceptingBid
+                                ? "bg-[#115E59] text-white hover:bg-teal-700 cursor-pointer"
+                                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            }`}
+                          >
+                            {isAcceptingBid ? "Accepting..." : "Accept Bid"}
+                          </button>
+                        </div>
+                      )}
 
                     </div>
                   </div>

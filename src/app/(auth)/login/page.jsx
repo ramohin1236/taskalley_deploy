@@ -39,7 +39,6 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
         const result = await loginUser(data).unwrap();
-        console.log("Login successful result:", result);
         if (result.success && result.data) {
             dispatch(setCredentials({
                 accessToken: result.data.accessToken,

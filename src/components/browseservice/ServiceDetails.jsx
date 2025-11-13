@@ -64,7 +64,6 @@ const ServiceDetails = ({ service }) => {
 
   const handleQuestionSubmit = () => {
     if (newQuestion.trim()) {
-      console.log("New question:", newQuestion);
       setNewQuestion("");
     }
   };
