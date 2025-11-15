@@ -37,7 +37,6 @@ const Progress = ({
   };
 
   const offeredDate = taskDetails?.createdAt ? formatDate(taskDetails.createdAt) : "";
-  // Use updatedAt as proxy for acceptance start; if backend later provides a dedicated accept timestamp, replace here
   const inProgressDate = (taskDetails?.status === "IN_PROGRESS" || taskDetails?.status === "ASSIGNED")
     ? formatDate(taskDetails?.updatedAt || taskDetails?.createdAt)
     : "";
@@ -52,10 +51,8 @@ const Progress = ({
     { id: 3, label: "Completed on", date: completedDate, completed: isCompleted },
   ];
 
-  // Progress width based on step completion
   const progressWidth = isCompleted ? "100%" : (isInProgress ? "66.67%" : "33.33%");
 
-  // Prefer provider name; if only an ID is present, resolve via bidsData
   const assignedTo = (() => {
     if (taskDetails?.provider && typeof taskDetails.provider === "object" && taskDetails.provider.name) {
       return taskDetails.provider.name;
@@ -105,8 +102,8 @@ const Progress = ({
       
       if (result.success) {
         toast.success("Task marked as complete successfully!");
-        // You might want to refetch the task data here or update the parent component
-        window.location.reload(); // Simple refresh to show updated status
+        
+        window.location.reload(); 
       }
     } catch (error) {
       console.error("Failed to complete task:", error);

@@ -123,7 +123,7 @@ const TaskDetails = () => {
         <div className="mt-4">
           {currentStatus === "Bids" && <Bids taskDetails={taskDetails}  bidsData={bidsData}/>}
           {currentStatus === "Progress" && <Progress taskDetails={taskDetails} bidsData={bidsData}/>}
-          {currentStatus === "Completed" && <Completed taskDetails={taskDetails} />}
+          {currentStatus === "Completed" && <Completed taskDetails={taskDetails}  bidsData={bidsData} />}
           {currentStatus === "Cancelled" && <Cancelled taskDetails={taskDetails} />}
         </div>
       </div>
