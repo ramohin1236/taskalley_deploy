@@ -5,20 +5,14 @@ import PricingSection from "./PricingSection";
 import ProgressBarComponent from "./ProgressBarComponent";
 import CancellationStatusComponent from "./CancellationStatusComponent";
 import DateExtensionRequestSection from "./DateExtensionRequestSection";
-import { useCompleteTaskMutation } from "@/lib/features/task/taskApi"; // Adjust import path
+import { useCompleteTaskMutation } from "@/lib/features/task/taskApi";
 import { toast } from "sonner";
 
-// cancellationStatus should be
-// cancellationStatus = "in-progress"
-// cancellationStatus = "accepted"
-// cancellationStatus = "rejected"
-// cancellationStatus = null
-
 const Progress = ({
-  cancellationStatus = null,
-  extensionStatus = null,
+  extensionStatus = "in-progress",
   bidsData,
-  taskDetails
+  taskDetails,
+  taskId
 }) => {
   const [completeTask, { isLoading: isCompleting }] = useCompleteTaskMutation();
 
@@ -69,10 +63,7 @@ const Progress = ({
     return "Not assigned";
   })();
 
-  const location =
-    taskDetails?.address ||
-    taskDetails?.city ||
-    "Location not specified";
+  const location = taskDetails?.address || taskDetails?.city || "Location not specified";
 
   const dateLabel = taskDetails?.preferredDate
     ? new Date(taskDetails.preferredDate).toLocaleDateString("en-US", {
@@ -82,9 +73,7 @@ const Progress = ({
       }) + (taskDetails?.preferredTime ? ` ${taskDetails.preferredTime}` : "")
     : "Schedule not set";
 
-  const description =
-    taskDetails?.description || "No description available.";
-
+  const description = taskDetails?.description || "No description available.";
   const budget = taskDetails?.budget;
 
   const handleMarkAsComplete = async () => {
@@ -99,11 +88,10 @@ const Progress = ({
 
     try {
       const result = await completeTask(taskDetails._id).unwrap();
-      
+
       if (result.success) {
         toast.success("Task marked as complete successfully!");
-        
-        window.location.reload(); 
+        window.location.reload();
       }
     } catch (error) {
       console.error("Failed to complete task:", error);
@@ -113,32 +101,31 @@ const Progress = ({
 
   return (
     <div className="flex flex-col gap-12">
-      {/* Task Info Section */}
       <TaskInfoSection
         assignedTo={assignedTo}
         location={location}
         dateLabel={dateLabel}
       />
 
-      {/* Task Details Section */}
       <TaskDetailsSection description={description} />
 
-      {/* Pricing Section */}
       <PricingSection budget={budget} />
 
-      {/* Progress Bar */}
       <ProgressBarComponent steps={steps} progressWidth={progressWidth} />
 
-      {/* Cancellation Status Section (conditional) */}
+      {/* Cancellation Status - Now it will automatically show only when there's a PENDING request */}
       <div>
-        <CancellationStatusComponent cancellationStatus={cancellationStatus} />
+        <CancellationStatusComponent
+          taskId={taskId}
+          taskDetails={taskDetails}
+          isServiceProvider={false}
+        />
         <DateExtensionRequestSection extensionStatus={extensionStatus} />
       </div>
 
-      {/* Mark as Complete Button - Only show if task is not already completed */}
       {!isCompleted && (
         <div className="flex justify-start">
-          <button 
+          <button
             onClick={handleMarkAsComplete}
             disabled={isCompleting}
             className={`px-6 py-2.5 rounded-md transition-colors font-medium cursor-pointer ${
@@ -152,7 +139,6 @@ const Progress = ({
         </div>
       )}
 
-      {/* Show message if task is already completed */}
       {isCompleted && (
         <div className="flex justify-start">
           <div className="px-6 py-2.5 bg-green-100 text-green-800 rounded-md font-medium">

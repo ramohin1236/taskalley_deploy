@@ -12,20 +12,24 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { useParams } from "next/navigation";
 import { useGetTaskByIdQuery } from "@/lib/features/task/taskApi";
 import { useGetBidsByTaskIdQuery } from "@/lib/features/bidApi/bidApi";
+import ResolutionModal from "@/components/my_tasks/ResolutionModal";
 
 const TaskDetails = () => {
   const params = useParams();
   const taskId = params.id;
   const [currentStatus, setCurrentStatus] = useState("Bids");
+  const [showResolutionModal, setShowResolutionModal] = useState(false); // Modal state
+  
   const status = ["Bids", "Progress", "Completed", "Cancelled"];
+  
   const {
     data: taskData,
     isLoading,
     error
   } = useGetTaskByIdQuery(taskId);
-  const taskDetails = taskData?.data
+  const taskDetails = taskData?.data;
+  console.log(taskDetails)
 
-  // Map backend task status to UI tab
   const tabForStatus = useMemo(() => {
     const backendStatus = taskDetails?.status;
     if (!backendStatus) return "Bids";
@@ -48,12 +52,12 @@ const TaskDetails = () => {
     setCurrentStatus(tabForStatus);
   }, [tabForStatus]);
 
-    const {
-      data: bidsData,
-      isLoading: isLoadingBids,
-      error: bidsError,
-      refetch: refetchBids
-    } = useGetBidsByTaskIdQuery(taskId);
+  const {
+    data: bidsData,
+    isLoading: isLoadingBids,
+    error: bidsError,
+    refetch: refetchBids
+  } = useGetBidsByTaskIdQuery(taskId);
 
   return (
     <div className="project_container mx-auto px-3 py-6 md:p-6">
@@ -71,20 +75,13 @@ const TaskDetails = () => {
         <div>
           {currentStatus === "Progress" && (
             <div>
-              {" "}
-
-            </div>
-          )}
-          {currentStatus === "Progress" && (
-            <div>
-              {" "}
-              <Link
-                href="/resolution"
-                className="px-6 py-2.5 bg-[#E6F4F1] text-teal-800 border border-teal-800 rounded-md  transition transform duration-300 hover:scale-105 cursor-pointer flex gap-2 items-center justify-center mt-12"
+              <button
+                onClick={() => setShowResolutionModal(true)}
+                className="px-6 py-2.5 bg-[#E6F4F1] text-teal-800 border border-teal-800 rounded-md transition transform duration-300 hover:scale-105 cursor-pointer flex gap-2 items-center justify-center mt-12"
               >
                 <Handshake className="text-sm font-semibold" />
                 Resolution Center
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -106,8 +103,9 @@ const TaskDetails = () => {
           </p>
           <div className="flex flex-wrap gap-2">
             {
-              taskDetails?.task_attachments?.map((img) => (
+              taskDetails?.task_attachments?.map((img, index) => (
                 <Image
+                  key={index}
                   src={img || srvcporvider}
                   height={100}
                   width={100}
@@ -117,16 +115,24 @@ const TaskDetails = () => {
               ))
             }
           </div>
-
         </div>
 
         <div className="mt-4">
-          {currentStatus === "Bids" && <Bids taskDetails={taskDetails}  bidsData={bidsData}/>}
-          {currentStatus === "Progress" && <Progress taskDetails={taskDetails} bidsData={bidsData}/>}
-          {currentStatus === "Completed" && <Completed taskDetails={taskDetails}  bidsData={bidsData} />}
+          {currentStatus === "Bids" && <Bids taskDetails={taskDetails} bidsData={bidsData}/>}
+          {currentStatus === "Progress" && <Progress taskId={taskId} taskDetails={taskDetails} bidsData={bidsData}/>}
+          {currentStatus === "Completed" && <Completed taskDetails={taskDetails} bidsData={bidsData} />}
           {currentStatus === "Cancelled" && <Cancelled taskDetails={taskDetails} />}
         </div>
       </div>
+
+      {/* Resolution Modal */}
+      {showResolutionModal && (
+        <ResolutionModal 
+          taskId={taskId}
+          taskDetails={taskDetails}
+          onClose={() => setShowResolutionModal(false)}
+        />
+      )}
     </div>
   );
 };
