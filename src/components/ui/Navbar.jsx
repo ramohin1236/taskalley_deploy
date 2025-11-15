@@ -11,38 +11,55 @@ import { FaCalendarAlt } from "react-icons/fa";
 import { FaMessage } from "react-icons/fa6";
 import { RiUserSettingsFill } from "react-icons/ri";
 import { PiSignOutBold } from "react-icons/pi";
-import { useAuth } from "@/components/auth/useAuth";
 
 const Navbar = () => {
   const pathname = usePathname();
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [mounted, setMounted] = useState(false); 
+  const [mounted, setMounted] = useState(false);
 
   const [profileOpen, setProfileOpen] = useState(false);
-
-  const handleLogout = (e) => {
-    e.preventDefault();
-    logout();
-  };
+  const [desktopProfileOpen, setDesktopProfileOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Close desktop dropdown when clicking outside
+  useEffect(() => {
+    if (!desktopProfileOpen) return;
+
+    const handleClickOutside = (event) => {
+      const dropdown = document.getElementById("desktop-profile-dropdown");
+      const avatarButton = document.getElementById("desktop-avatar-button");
+
+      if (
+        dropdown &&
+        avatarButton &&
+        !dropdown.contains(event.target) &&
+        !avatarButton.contains(event.target)
+      ) {
+        setDesktopProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [desktopProfileOpen]);
+
+
 
   const getLinkClass = (path, isButton = false) => {
     const isActive = pathname === path;
-    
+
     if (isButton) {
       return isActive
         ? "px-4 py-2 bg-[#115e59] text-white rounded-md shadow-md"
         : "px-4 py-2 bg-[#115e59] text-white rounded-md hover:bg-[#0d4a42] transition-colors";
     }
-    
+
     return isActive
       ? "font-semibold px-4 py-2 bg-[#115e59] text-white rounded-md shadow-md"
       : "text-gray-800 hover:text-[#115e59] px-4 py-2 hover:border-b-2 hover:border-[#115e59] transition-all";
@@ -57,7 +74,10 @@ const Navbar = () => {
       <Link href="/browseservice" className={getLinkClass("/browseservice")}>
         Browse Tasks
       </Link>
-      <Link href="/service-listing" className={getLinkClass("/service-listing")}>
+      <Link
+        href="/service-listing"
+        className={getLinkClass("/service-listing")}
+      >
         Browse Service
       </Link>
       <Link href="/contact" className={getLinkClass("/contact")}>
@@ -68,16 +88,16 @@ const Navbar = () => {
 
   const taskProviderLinks = (
     <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6">
-      <Link 
-        href="/post_task" 
-        className={getLinkClass("/post_task")}
-      >
+      <Link href="/post_task" className={getLinkClass("/post_task")}>
         Post A Task
       </Link>
       <Link href="/browseservice" className={getLinkClass("/browseservice")}>
         Browse Tasks
       </Link>
-      <Link href="/service-listing" className={getLinkClass("/service-listing")}>
+      <Link
+        href="/service-listing"
+        className={getLinkClass("/service-listing")}
+      >
         Browse Services
       </Link>
     </div>
@@ -91,7 +111,10 @@ const Navbar = () => {
       <Link href="/browseservice" className={getLinkClass("/browseservice")}>
         Browse Tasks
       </Link>
-      <Link href="/list_my_service" className={getLinkClass("/list_my_service")}>
+      <Link
+        href="/list_my_service"
+        className={getLinkClass("/list_my_service")}
+      >
         My Services
       </Link>
     </div>
@@ -146,100 +169,13 @@ const Navbar = () => {
     );
   }
 
-  // Customer Dropdown Menu
-  const customerDropdownMenu = (
-    <ul
-      tabIndex={0}
-      className="menu menu-sm dropdown-content rounded-box mt-3 px-4 pr-10 py-4 shadow flex flex-col gap-3 bg-white z-50"
-    >
-      <div className="flex items-center gap-3 pr-12 pb-6 border-b">
-        <div className="w-16 h-16 overflow-hidden rounded-xl">
-          <img
-            alt="Profile"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div>
-          <p className="text-xl font-bold">Mr.Kashem</p>
-          <p className="text-gray-600">email@gmail.com</p>
-        </div>
-      </div>
-      
-      <Link className={getProfileLinkClass("/my_task")} href="/my_task">
-        <FaCalendarAlt className="text-[#115e59]" /> My tasks
-      </Link>
-      
-      <Link className={getProfileLinkClass("/chat")} href="/chat">
-        <FaMessage className="text-[#115e59]" /> Messages
-      </Link>
-      
-      <Link
-        className={`${getProfileLinkClass("/profile_info")} border-b pb-4 mb-2`}
-        href="/profile_info"
-      >
-        <RiUserSettingsFill className="text-[#115e59]" /> My Profile
-      </Link>
-
-      <button 
-        onClick={handleLogout}
-        className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors w-full text-left"
-      >
-        <PiSignOutBold className="text-red-500" /> Sign Out
-      </button>
-    </ul>
-  );
-
-  // Provider Dropdown Menu
-  const providerDropdownMenu = (
-    <ul
-      tabIndex={0}
-      className="menu menu-sm dropdown-content rounded-box mt-3 px-4 pr-10 py-4 shadow flex flex-col gap-3 bg-white z-50"
-    >
-      <div className="flex items-center gap-3 pr-12 pb-6 border-b">
-        <div className="w-16 h-16 overflow-hidden rounded-xl">
-          <img
-            alt="Profile"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div>
-          <p className="text-xl font-bold">Mr.Kashem</p>
-          <p className="text-gray-600">email@gmail.com</p>
-        </div>
-      </div>
-      
-      <Link className={getProfileLinkClass("/my_task")} href="/my_task">
-        <FaCalendarAlt className="text-[#115e59]" /> My tasks
-      </Link>
-      
-      <Link className={getProfileLinkClass("/chat")} href="/chat">
-        <FaMessage className="text-[#115e59]" /> Messages
-      </Link>
-      
-      <Link
-        className={`${getProfileLinkClass("/service_profile_info")} border-b pb-4 mb-2`}
-        href="/service_profile_info"
-      >
-        <RiUserSettingsFill className="text-[#115e59]" /> My Profile
-      </Link>
-
-      <button 
-        onClick={handleLogout}
-        className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors w-full text-left"
-      >
-        <PiSignOutBold className="text-red-500" /> Sign Out
-      </button>
-    </ul>
-  );
-
   const desktopProfileDropdown = (
-    <div className="dropdown dropdown-end hidden lg:block">
-      <div
-        tabIndex={0}
-        role="button"
-        className="btn btn-ghost btn-circle avatar"
+    <div className="relative hidden lg:block">
+      <button
+        id="desktop-avatar-button"
+        onClick={() => setDesktopProfileOpen(!desktopProfileOpen)}
+        className="btn btn-ghost btn-circle avatar focus:outline-none cursor-pointer"
+        aria-label="Toggle profile menu"
       >
         <div className="w-12 rounded-full overflow-hidden">
           <img
@@ -248,67 +184,77 @@ const Navbar = () => {
             className="w-full h-full object-cover"
           />
         </div>
-      </div>
-      {role === "customer" && customerDropdownMenu}
-      {role === "provider" && providerDropdownMenu}
-    </div>
-  );
-
-  // Mobile Customer Dropdown
-  const mobileCustomerDropdown = (
-    <div className="flex flex-col gap-2">
-      <Link className={getProfileLinkClass("/my_task")} href="/my_task">
-        <FaCalendarAlt className="text-[#115e59]" /> My tasks
-      </Link>
-      
-      <Link className={getProfileLinkClass("/chat")} href="/chat">
-        <FaMessage className="text-[#115e59]" /> Messages
-      </Link>
-      
-      <Link
-        className={`${getProfileLinkClass("/profile_info")} border-b pb-4 mb-2`}
-        href="/profile_info"
-      >
-        <RiUserSettingsFill className="text-[#115e59]" /> My Profile
-      </Link>
-
-      <button 
-        onClick={handleLogout}
-        className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors w-full text-left"
-      >
-        <PiSignOutBold className="text-red-500" /> Sign Out
       </button>
+      {desktopProfileOpen && (
+        <ul
+          id="desktop-profile-dropdown"
+          className="absolute right-0 mt-3 rounded-box px-4 pr-10 py-4 shadow flex flex-col gap-3 bg-white z-50 min-w-[250px]"
+        >
+          <div className="flex items-center gap-3 pr-12 pb-6 border-b">
+            <div className="w-16 h-16 overflow-hidden rounded-xl">
+              <img
+                alt="Profile"
+                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-xl font-bold">Mr.Kashem</p>
+              <p className="text-gray-600">email@gmail.com</p>
+            </div>
+          </div>
+
+          <Link
+            className={getProfileLinkClass("/my_task")}
+            href="/my_task"
+            onClick={() => setDesktopProfileOpen(false)}
+          >
+            <FaCalendarAlt className="text-[#115e59]" /> My tasks
+          </Link>
+
+          <Link
+            className={getProfileLinkClass("/chat")}
+            href="/chat"
+            onClick={() => setDesktopProfileOpen(false)}
+          >
+            <FaMessage className="text-[#115e59]" /> Messages
+          </Link>
+
+          {role === "service_provider" ? (
+            <Link
+              className={`${getProfileLinkClass(
+                "/service_profile_info"
+              )} border-b pb-4 mb-2`}
+              href="/service_profile_info"
+              onClick={() => setDesktopProfileOpen(false)}
+            >
+              <RiUserSettingsFill className="text-[#115e59]" /> My Profile
+            </Link>
+          ) : (
+            <Link
+              className={`${getProfileLinkClass(
+                "/profile_info"
+              )} border-b pb-4 mb-2`}
+              href="/profile_info"
+              onClick={() => setDesktopProfileOpen(false)}
+            >
+              <RiUserSettingsFill className="text-[#115e59]" /> My Profile
+            </Link>
+          )}
+
+          <Link
+            className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors"
+            href="/login"
+            onClick={() => setDesktopProfileOpen(false)}
+          >
+            <PiSignOutBold className="text-red-500" /> Sign Out
+          </Link>
+        </ul>
+      )}
     </div>
   );
 
-  // Mobile Provider Dropdown
-  const mobileProviderDropdown = (
-    <div className="flex flex-col gap-2">
-      <Link className={getProfileLinkClass("/my_task")} href="/my_task">
-        <FaCalendarAlt className="text-[#115e59]" /> My tasks
-      </Link>
-      
-      <Link className={getProfileLinkClass("/chat")} href="/chat">
-        <FaMessage className="text-[#115e59]" /> Messages
-      </Link>
-      
-      <Link
-        className={`${getProfileLinkClass("/service_profile_info")} border-b pb-4 mb-2`}
-        href="/service_profile_info"
-      >
-        <RiUserSettingsFill className="text-[#115e59]" /> My Profile
-      </Link>
-
-      <button 
-        onClick={handleLogout}
-        className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors w-full text-left"
-      >
-        <PiSignOutBold className="text-red-500" /> Sign Out
-      </button>
-    </div>
-  );
-
-  // Mobile profile (custom toggle)
+  //  Mobile profile (custom toggle)
   const mobileProfileDropdown = (
     <div className="lg:hidden mt-6">
       <button
@@ -323,7 +269,11 @@ const Navbar = () => {
           />
         </div>
         <span className="font-medium">My Account</span>
-        <div className={`ml-auto transform transition-transform ${profileOpen ? 'rotate-180' : ''}`}>
+        <div
+          className={`ml-auto transform transition-transform ${
+            profileOpen ? "rotate-180" : ""
+          }`}
+        >
           ▼
         </div>
       </button>
@@ -332,8 +282,42 @@ const Navbar = () => {
           profileOpen ? "max-h-[400px] mt-4" : "max-h-0"
         }`}
       >
-        {role === "customer" && mobileCustomerDropdown}
-        {role === "provider" && mobileProviderDropdown}
+        <div className="flex flex-col gap-2">
+          <Link className={getProfileLinkClass("/my_task")} href="/my_task">
+            <FaCalendarAlt className="text-[#115e59]" /> My tasks
+          </Link>
+
+          <Link className={getProfileLinkClass("/chat")} href="/chat">
+            <FaMessage className="text-[#115e59]" /> Messages
+          </Link>
+
+          {role === "service_provider" ? (
+            <Link
+              className={`${getProfileLinkClass(
+                "/service_profile_info"
+              )} border-b pb-4 mb-2`}
+              href="/service_profile_info"
+            >
+              <RiUserSettingsFill className="text-[#115e59]" /> My Profile
+            </Link>
+          ) : (
+            <Link
+              className={`${getProfileLinkClass(
+                "/profile_info"
+              )} border-b pb-4 mb-2`}
+              href="/profile_info"
+            >
+              <RiUserSettingsFill className="text-[#115e59]" /> My Profile
+            </Link>
+          )}
+
+          <Link
+            className="flex items-center gap-2 text-lg hover:bg-red-50 hover:text-red-600 px-3 py-2 rounded-md transition-colors"
+            href="/logout"
+          >
+            <PiSignOutBold className="text-red-500" /> Sign Out
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -381,7 +365,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/*  Mobile Dropdown  */}
       <div
         className={`lg:hidden bg-white shadow-md px-6 overflow-hidden transition-all duration-500 border-t border-gray-100 ${
           isOpen ? "max-h-[700px] opacity-100 py-4" : "max-h-0 opacity-0 py-0"
@@ -390,13 +374,15 @@ const Navbar = () => {
         {role === "guest" && (
           <>
             {guestLinks}
-            <div className="pt-4 border-t border-gray-100 mt-4">{guestAuthButtons}</div>
+            <div className="pt-4 border-t border-gray-100 mt-4">
+              {guestAuthButtons}
+            </div>
           </>
         )}
-        {(role === "customer" || role === "provider") && (
+        {(role === "customer" || role === "service_provider") && (
           <>
             {role === "customer" && taskProviderLinks}
-            {role === "provider" && serviceProviderLinks}
+            {role === "service_provider" && serviceProviderLinks}
             {mobileProfileDropdown}
           </>
         )}

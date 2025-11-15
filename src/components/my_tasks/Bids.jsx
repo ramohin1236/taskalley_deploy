@@ -205,7 +205,7 @@ const Bids = ({ taskDetails, bidsData }) => {
                           : "border-gray-300 text-gray-400 cursor-not-allowed"
                       }`}
                     >
-                      {isAcceptingBid ? "Accepting..." : "Accept the Task"}
+                      {isAcceptingBid ? "Accepting..." : "Accept the Bid"}
                     </button>
                   )}
                   <Link

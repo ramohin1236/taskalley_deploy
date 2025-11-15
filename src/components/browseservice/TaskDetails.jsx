@@ -57,6 +57,7 @@ const TaskDetails = ({ task }) => {
     skip: !task?._id,
   });
 
+   console.log("kfjlksdjfksjlfkjslkdfjlk",questionsData)
 
   const taskData = {
     title: task?.title || "Task Title",
@@ -633,7 +634,7 @@ const TaskDetails = ({ task }) => {
                       className="flex gap-4 p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors"
                     >
                       <Image
-                        src={question?.user?.profile_image || question?.user?.profileImage || client}
+                        src={question?.provider?.profile_image || question?.user?.profileImage || client}
                         alt={question?.user?.name || "User"}
                         width={64}
                         height={64}
@@ -642,7 +643,7 @@ const TaskDetails = ({ task }) => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-medium text-gray-900">
-                            {question?.user?.name || "Anonymous"}
+                            {question?.provider?.name || "Anonymous"}
                           </h3>
                           <span className="text-xs text-gray-400">
                             {formatTimeAgo(question.createdAt)}
