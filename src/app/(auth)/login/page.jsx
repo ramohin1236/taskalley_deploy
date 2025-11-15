@@ -53,7 +53,7 @@ const Login = () => {
                 router.push('/verify');
             } else {
                 if (userRole === 'provider') {
-                    router.push('/service_provider_profile');
+                    router.push('/');
                 } else {
                     router.push('/');
                 }
