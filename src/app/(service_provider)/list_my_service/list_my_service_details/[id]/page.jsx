@@ -54,7 +54,7 @@ const ListMyServiceDetails = () => {
               width={100}
               height={100}
               alt="Professional cleaner vacuuming office"
-              className="w-36 md:w-96 object-cover rounded-lg"
+              className="w-36 md:w-72 object-cover rounded-lg"
             />
           </div>
           <div className="flex-1">

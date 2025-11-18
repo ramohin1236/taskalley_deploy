@@ -154,27 +154,27 @@ const authApi = createApi({
       },
       invalidatesTags: ["Auth"],
     }),
-   updateProfile: builder.mutation({
-  query: (formData) => ({
-    url: "/user/update-profile",
-    method: "PATCH",
-    body: formData,
-  }),
-  async onQueryStarted(args, { dispatch, queryFulfilled }) {
-    try {
-      const { data } = await queryFulfilled;
-      if (data?.success) {
-        dispatch(updateAddressStatus(true));
-        if (typeof window !== "undefined") {
-          localStorage.setItem("isAddressProvided", "true");
+    updateProfile: builder.mutation({
+      query: (formData) => ({
+        url: "/user/update-profile",
+        method: "PATCH",
+        body: formData,
+      }),
+      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.success) {
+            dispatch(updateAddressStatus(true));
+            if (typeof window !== "undefined") {
+              localStorage.setItem("isAddressProvided", "true");
+            }
+          }
+        } catch (err) {
+          console.log(err);
         }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  },
-  invalidatesTags: ["Auth"],
-}),
+      },
+      invalidatesTags: ["Auth"],
+    }),
     forgetPassword: builder.mutation({
       query: (phoneData) => ({
         url: "/auth/forget-password",
@@ -220,6 +220,6 @@ export const {
   useForgetPasswordMutation,
   useVerifyResetOtpMutation,
   useVerifyUserCodeMutation,
-  useGetMyProfileQuery
+  useGetMyProfileQuery,
 } = authApi;
 export default authApi;
