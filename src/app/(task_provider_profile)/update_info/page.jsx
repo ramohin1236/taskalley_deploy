@@ -9,12 +9,14 @@ import {
   useUpdateProfileMutation,
 } from "@/lib/features/auth/authApi";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const UpdateInformation = () => {
   const [profileImage, setProfileImage] = useState(client);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
   const documentInputRef = useRef(null);
+  const role = useSelector((state) => state?.auth?.user?.role);
 
   const { data: profileData, isLoading, error } = useGetMyProfileQuery();
   const [updateProfile] = useUpdateProfileMutation();
@@ -264,8 +266,8 @@ const UpdateInformation = () => {
                   {userData?.name || "User Name"}
                 </h3>
                 <p className="text-gray-600 mb-4 capitalize">
-                  {userData?.role === "provider"
-                    ? "Service Provider"
+                  {role === "provider"
+                    ? "Provider"
                     : "Customer"}
                 </p>
                 <button
