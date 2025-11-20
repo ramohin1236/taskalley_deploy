@@ -9,7 +9,7 @@ import { useCompleteTaskMutation } from "@/lib/features/task/taskApi";
 import { toast } from "sonner";
 
 const Progress = ({
-  extensionStatus = "in-progress",
+  extensionStatus = "",
   bidsData,
   taskDetails,
   taskId
