@@ -2,7 +2,7 @@
 import registration_img from "../../../../public/login_page_image.png";
 import { useRegisterMutation } from "@/lib/features/auth/authApi";
 import main_logo from "../../../../public/main_logo_svg.svg";
-import React from "react";
+import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
@@ -19,7 +19,16 @@ const Register = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: { phone: '+' }
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
   const [registerUser, { isLoading, isError, isSuccess, error }] = useRegisterMutation();
 
   const onSubmit = async (data) => {
@@ -167,28 +176,60 @@ const Register = () => {
                         <label className="text-[#1F2937] text-sm font-medium mb-1 block">
                           Password
                         </label>
-                        <div className="relative flex items-center">
-                          <input
-                            {...register("password", { required: true })}
-                            name="password"
-                            type="password"
-                            required
-                            className="w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600"
-                            placeholder="Enter password"
-                          />
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="#bbb"
-                            stroke="#bbb"
-                            className="w-4 h-4 absolute right-4 cursor-pointer"
-                            viewBox="0 0 128 128"
-                          >
-                            <path
-                              d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"
-                              data-original="#000000"
-                            ></path>
-                          </svg>
-                        </div>
+                      <div className="relative flex items-center">
+        <input
+          {...register("password", { required: true })}
+          name="password"
+          type={showPassword ? "text" : "password"}
+          required
+          className="w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-10 rounded-md outline-blue-600"
+          placeholder="Enter password"
+        />
+        <button
+          type="button"
+          onClick={togglePasswordVisibility}
+          className="absolute right-3 p-1 focus:outline-none"
+        >
+          {showPassword ? (
+            // Eye slash icon (when password is visible)
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 text-slate-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+              />
+            </svg>
+          ) : (
+            // Eye icon (when password is hidden)
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 text-slate-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          )}
+        </button>
+      </div>
                         {errors.password && (
                           <p className="text-red-500">Password is required.</p>
                         )}
@@ -199,29 +240,59 @@ const Register = () => {
                           Confirm Password
                         </label>
                         <div className="relative flex items-center">
-                          <input
-                            {...register("confirmPassword", {
-                              required: true,
-                            })}
-                            name="confirmPassword"
-                            type="password"
-                            required
-                            className="w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-8 rounded-md outline-blue-600"
-                            placeholder="Enter password"
-                          />
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="#bbb"
-                            stroke="#bbb"
-                            className="w-4 h-4 absolute right-4 cursor-pointer"
-                            viewBox="0 0 128 128"
-                          >
-                            <path
-                              d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"
-                              data-original="#000000"
-                            ></path>
-                          </svg>
-                        </div>
+        <input
+          {...register("confirmPassword", { required: true })}
+          name="confirmPassword"
+          type={showConfirmPassword ? "text" : "password"}
+          required
+          className="w-full text-slate-900 text-sm border border-slate-300 px-4 py-3 pr-10 rounded-md outline-blue-600"
+          placeholder="Confirm password"
+        />
+        <button
+          type="button"
+          onClick={toggleConfirmPasswordVisibility}
+          className="absolute right-3 p-1 focus:outline-none"
+        >
+          {showConfirmPassword ? (
+            // Eye slash icon (when password is visible)
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 text-slate-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+              />
+            </svg>
+          ) : (
+            // Eye icon (when password is hidden)
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-5 h-5 text-slate-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          )}
+        </button>
+      </div>
                         {errors.confirm_password && (
                           <p className="text-red-500">
                             Please confirm your password.
