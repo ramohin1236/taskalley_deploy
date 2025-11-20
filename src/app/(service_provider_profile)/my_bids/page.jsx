@@ -1,51 +1,80 @@
+// MyBids.jsx
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import srvcporvider from "../../../../public/women.svg";
 import popularcateIcon from "../../../../public/popularcate.svg";
 import Link from "next/link";
+import BidCard from "@/components/Bids/BidCard";
+import { useGetMyBidsQuery } from "@/lib/features/bidApi/bidApi";
 
 const bidStatusCategories = [
   {
-    name: "Ongoing Task",
-    status: "ACTIVE",
+    name: "OPEN_FOR_BID",
+    displayName: "Open for Bid",
+    description: "Tasks that are currently open for bidding"
   },
   {
-    name: "Bids Made", 
-    status: "PENDING",
+    name: "IN_PROGRESS", 
+    displayName: "In Progress",
+    description: "Tasks that are currently being worked on"
   },
   {
-    name: "Bids Received",
-    status: "ACCEPTED",
-  },
-   {
-    name: "Completed Tasks",
-    status: "WON",
+    name: "COMPLETED",
+    displayName: "Completed Tasks",
+    description: "Tasks that have been completed"
   },
   {
-    name: "Rejected Bids",
-    status: "REJECTED",
+    name: "CANCELLED",
+    displayName: "Cancelled Tasks",
+    description: "Tasks that have been cancelled"
+  },
+  {
+    name: "DISPUTE",
+    displayName: "Dispute Tasks",
+    description: "Tasks that are in dispute"
+  },
+  {
+    name: "LATE",
+    displayName: "Late Tasks",
+    description: "Tasks that are running late"
+  },
+  {
+    name: "bidMade",
+    displayName: "Bids Made",
+    description: "Bids you have placed on tasks"
+  },
+  {
+    name: "bidReceived",
+    displayName: "Bids Received",
+    description: "Bids received on your tasks"
   }
 ];
 
 const MyBids = () => {
-  const [activeTab, setActiveTab] = useState("Active Bids");
+  const [activeTab, setActiveTab] = useState("bidMade");
+  const { data, isLoading, error, refetch } = useGetMyBidsQuery(activeTab);
 
-  // TODO: Add API call here when you have the endpoint
-  // const { data: bidsData, isLoading, error } = useGetMyBidsQuery({
-  //   status: activeStatus,
-  //   limit: 20
-  // });
+  // Get the display name for the active tab
+  const getActiveTabDisplayName = () => {
+    const activeCategory = bidStatusCategories.find(cat => cat.name === activeTab);
+    return activeCategory ? activeCategory.displayName : activeTab;
+  };
 
-  const isLoading = false; 
-  const error = null;
-  const bids = []; 
-  const activeStatus = bidStatusCategories.find((cat) => cat.name === activeTab)?.status || "";
+  const getActiveTabDescription = () => {
+    const activeCategory = bidStatusCategories.find(cat => cat.name === activeTab);
+    return activeCategory ? activeCategory.description : "";
+  };
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
+
+  // Refresh data when tab changes
+  useEffect(() => {
+    refetch();
+  }, [activeTab, refetch]);
 
   if (isLoading) {
     return (
@@ -95,9 +124,11 @@ const MyBids = () => {
           </div>
           <div className="text-center py-8">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Failed to Load Bids</h2>
-            <p className="text-gray-600 mb-4">There was an error loading your bids.</p>
+            <p className="text-gray-600 mb-4">
+              {error?.data?.message || "There was an error loading your bids."}
+            </p>
             <button 
-              onClick={() => window.location.reload()}
+              onClick={() => refetch()}
               className="px-6 py-2 bg-[#115e59] text-white rounded-lg hover:bg-teal-700 transition-colors"
             >
               Try Again
@@ -107,6 +138,9 @@ const MyBids = () => {
       </section>
     );
   }
+
+  const tasks = data?.data?.result || [];
+  const totalTasks = data?.data?.meta?.total || 0;
 
   return (
     <section className="max-w-[1240px] mx-auto px-4 pb-28">
@@ -124,6 +158,17 @@ const MyBids = () => {
                 My Bids
               </p>
             </div>
+            <p className="text-gray-600 text-sm">
+              Manage and track all your bids and tasks in one place
+            </p>
+          </div>
+          
+          {/* Summary Stats */}
+          <div className="flex gap-4">
+            <div className="bg-white px-4 py-2 rounded-lg shadow-sm border">
+              <p className="text-sm text-gray-500">Total Tasks</p>
+              <p className="text-lg font-bold text-[#115e59]">{totalTasks}</p>
+            </div>
           </div>
         </div>
 
@@ -134,19 +179,29 @@ const MyBids = () => {
               <button
                 key={cat.name}
                 onClick={() => handleTabChange(cat.name)}
-                className={`px-4 md:px-6 py-2 rounded-md text-sm font-medium transition cursor-pointer ${
+                className={`px-4 md:px-6 py-2 rounded-md text-sm font-medium transition cursor-pointer whitespace-nowrap ${
                   activeTab === cat.name
                     ? "bg-[#115e59] text-white"
                     : "bg-[#e6f4f1] hover:bg-[#115e59] hover:text-white"
                 }`}
               >
-                {cat.name}
+                {cat.displayName}
               </button>
             ))}
           </div>
 
+          {/* Active Tab Info */}
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-1">
+              {getActiveTabDisplayName()}
+            </h2>
+            <p className="text-gray-600">
+              {getActiveTabDescription()}
+            </p>
+          </div>
+
           {/* Bids Grid */}
-          {bids?.length === 0 ? (
+          {tasks.length === 0 ? (
             <div className="text-center py-12">
               <div className="bg-gray-50 rounded-lg p-8 max-w-md mx-auto">
                 <Image
@@ -157,41 +212,53 @@ const MyBids = () => {
                   className="mx-auto mb-4 opacity-50"
                 />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  No Bids Found
+                  No {getActiveTabDisplayName()} Found
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {activeTab === "Active Bids" 
-                    ? "You haven't placed any active bids yet." 
-                    : `You don't have any ${activeTab.toLowerCase()}.`
-                  }
+                  {getActiveTabDescription() || `You don't have any ${getActiveTabDisplayName().toLowerCase()} at the moment.`}
                 </p>
-                <Link 
-                  href="/browseservice" 
-                  className="inline-block px-6 py-2 bg-[#115e59] text-white rounded-lg hover:bg-teal-700 transition-colors"
-                >
-                  Browse Tasks to Bid
-                </Link>
+                {activeTab === "bidMade" && (
+                  <Link 
+                    href="/browseservice" 
+                    className="inline-block px-6 py-2 bg-[#115e59] text-white rounded-lg hover:bg-teal-700 transition-colors"
+                  >
+                    Browse Tasks to Bid
+                  </Link>
+                )}
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-6">
-              {/* TODO: Map through actual bids data when API is available */}
-              {/* {bids?.map((bid) => (
-                <div key={bid._id}>
-                  <Link href={`/bid/${bid._id}`}>
-                    <BidCard 
-                      bid={bid}
-                      activeTab={activeTab}
-                    />
-                  </Link>
-                </div>
-              ))} */}
-              
-              {/* Temporary message until API is integrated */}
-              <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">Bid data will appear here once the API is integrated.</p>
-                <p className="text-sm text-gray-400">Active Tab: {activeTab} | Status: {activeStatus}</p>
+            <div>
+              {/* Results Count */}
+              <div className="mb-4">
+                <p className="text-sm text-gray-600">
+                  Showing {tasks.length} of {totalTasks} tasks
+                </p>
               </div>
+
+              {/* Tasks Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {tasks.map((task) => (
+                  <BidCard key={task._id} task={task} />
+                ))}
+              </div>
+
+              {/* Pagination - You can implement this later */}
+              {data?.data?.meta?.totalPage > 1 && (
+                <div className="flex justify-center mt-8">
+                  <div className="flex gap-2">
+                    <button className="px-3 py-2 bg-gray-200 rounded-md text-sm">
+                      Previous
+                    </button>
+                    <span className="px-3 py-2 text-sm">
+                      Page {data.data.meta.page} of {data.data.meta.totalPage}
+                    </span>
+                    <button className="px-3 py-2 bg-gray-200 rounded-md text-sm">
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

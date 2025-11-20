@@ -1,3 +1,4 @@
+// bidApi.js
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getTokens } from "@/utils/auth";
 import baseUrl from "../../../../utils/baseUrl";
@@ -10,10 +11,9 @@ const bidApi = createApi({
       const state = getState();
       const accessToken = state?.auth?.accessToken || getTokens().accessToken;
       if (accessToken) {
-        // Backend expects token without "Bearer " prefix
         headers.set("Authorization", `${accessToken}`);
       } else {
-        console.log(" No access token found");
+        console.log("No access token found");
       }
       return headers;
     },
@@ -49,14 +49,13 @@ const bidApi = createApi({
     }),
 
     getMyBids: builder.query({
-      query: (taskId) => {
-        // const params = new URLSearchParams();
-        // params.append("limit", limit);
-        // params.append("page", page);
-        // if (status) params.append("status", status);
-
+      query: (status = "") => {
+        const params = new URLSearchParams();
+        if (status) {
+          params.append("status", status);
+        }
         return {
-          url: `/bid/my-bids?${taskId}`,
+          url: `/task/my-task?${params.toString()}`,
           method: "GET",
         };
       },
