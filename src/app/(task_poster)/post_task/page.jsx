@@ -368,14 +368,6 @@ const TaskCreationApp = () => {
                   required
                 />
               
-                
-    
-                {process.env.NODE_ENV === 'development' && formData.locationCoordinates && (
-                  <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
-                    <p>Coordinates: {JSON.stringify(formData.locationCoordinates)}</p>
-                    <p>City: {formData.city}</p>
-                  </div>
-                )}
               </div>
             )}
             <RadioGroup
