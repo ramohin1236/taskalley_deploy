@@ -482,8 +482,11 @@ const TaskDetails = ({ task }) => {
                         <span className="text-xs text-gray-400">
                           {formatTimeAgo(bid.createdAt)}
                         </span>
+                       
                       </div>
-
+                           <p className=" text-gray-400 text-xl mb-2">
+                          ₦{bid.price}
+                        </p>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
