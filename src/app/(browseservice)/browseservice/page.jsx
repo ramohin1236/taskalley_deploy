@@ -1,5 +1,5 @@
-import React from "react";
 import GoogleMap from "@/components/browseservice/GoogleMap";
+import React from "react";
 
 
 const BrowseService = () => {

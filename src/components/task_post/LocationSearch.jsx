@@ -16,34 +16,43 @@ const LocationSearch = ({
   const autocompleteRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Load Google Maps script
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY,
     libraries,
   });
 
-  console.log("Is Loaded---->",isLoaded)
-
-  // Update input value when value prop changes
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
-  // Handle place selection
   const handlePlaceSelect = (place) => {
     if (!place) return;
     
     const address = place.formatted_address;
     setInputValue(address);
     
-    // Call both onChange and onSelect with appropriate data
+    // Get coordinates from place geometry
+    const coordinates = place.geometry?.location 
+      ? [place.geometry.location.lng(), place.geometry.location.lat()]
+      : null;
+
+    // Get city name from address components
+    let city = "";
+    if (place.address_components) {
+      const cityComponent = place.address_components.find(component =>
+        component.types.includes('locality')
+      );
+      city = cityComponent?.long_name || "";
+    }
+
+    // Call onChange with address only
     onChange?.(address);
+    
+    // Call onSelect with complete location data
     onSelect?.({
       address,
-      coordinates: {
-        lat: place.geometry?.location?.lat(),
-        lng: place.geometry?.location?.lng()
-      },
+      coordinates,
+      city,
       placeId: place.place_id
     });
   };
@@ -59,19 +68,16 @@ const LocationSearch = ({
     }
   };
 
-  // Handle manual input changes
   const handleInputChange = (e) => {
     const newValue = e.target.value;
     setInputValue(newValue);
     
-    // If user clears the input, clear the selection
     if (!newValue.trim()) {
       onChange?.('');
       onSelect?.(null);
     }
   };
 
-  // Handle clear button click
   const handleClear = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -110,8 +116,8 @@ const LocationSearch = ({
           onLoad={onLoad}
           onPlaceChanged={onPlaceChanged}
           options={{
-            componentRestrictions: { country: 'ng' },
-            fields: ['formatted_address', 'geometry', 'name', 'place_id'],
+            // componentRestrictions: { country: 'ng' },
+            fields: ['formatted_address', 'geometry', 'name', 'place_id', 'address_components'],
             types: ['establishment', 'geocode']
           }}
         >

@@ -40,6 +40,7 @@ const TaskCreationApp = () => {
     taskType: "in-person",
     location: "",
     locationCoordinates: null,
+    city: "",
     taskTiming: "fixed-date", 
     preferredDate: "",
     preferredTime: "",
@@ -47,7 +48,6 @@ const TaskCreationApp = () => {
     agreedToTerms: false,
     taskAttachments: [],
   });
-
 
   const steps = [
     { id: 0, title: "Task Overview" },
@@ -128,6 +128,29 @@ const TaskCreationApp = () => {
     }
   };
 
+  // Handle location selection with coordinates and city
+  const handleLocationSelect = (locationData) => {
+    if (locationData) {
+      setFormData(prev => ({
+        ...prev,
+        location: locationData.address,
+        locationCoordinates: locationData.coordinates,
+        city: locationData.city || ""
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        location: "",
+        locationCoordinates: null,
+        city: ""
+      }));
+    }
+    
+    if (formErrors.location) {
+      setFormErrors(prev => ({ ...prev, location: "" }));
+    }
+  };
+
   const handleFileChange = (files) => {
     setFormData((prev) => ({ ...prev, taskAttachments: files }));
   };
@@ -160,15 +183,18 @@ const TaskCreationApp = () => {
 
       const mappedData = mapToBackendValues(formData);
 
+      const coordinates = mappedData.locationCoordinates || [90.4125, 23.8103];
+
       const taskPayload = {
         title: mappedData.taskTitle,
         category: mappedData.taskCategory,
         description: mappedData.taskDescription,
         budget: parseInt(mappedData.budget),
         address: mappedData.location || "",
+        city: mappedData.city || "",
         location: {
           type: "Point",
-          coordinates: mappedData.locationCoordinates || [90.4125, 23.8103]
+          coordinates: coordinates
         },
         scheduleType: mappedData.taskTiming, 
         ...(mappedData.taskTiming === "FIXED_DATE_AND_TIME" && {
@@ -183,11 +209,11 @@ const TaskCreationApp = () => {
         taskPayload.preferredTime = `0${taskPayload.preferredTime}`;
       }
 
-
+      console.log("Task Payload:", taskPayload);
       formDataToSend.append('data', JSON.stringify(taskPayload));
 
       const result = await createTask(formDataToSend).unwrap();
-      console.log("result--->",result)
+      console.log("result--->", result);
       
       toast.success("Task created successfully!");
 
@@ -199,6 +225,7 @@ const TaskCreationApp = () => {
         taskType: "in-person",
         location: "",
         locationCoordinates: null,
+        city: "",
         taskTiming: "fixed-date",
         preferredDate: "",
         preferredTime: "",
@@ -336,11 +363,18 @@ const TaskCreationApp = () => {
                 <LocationSearch
                   value={formData.location}
                   onChange={(value) => handleInputChange("location", value)}
+                  onSelect={handleLocationSelect}
                   placeholder="Search for your location..."
                   required
                 />
-                {formErrors.location && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.location}</p>
+              
+                
+    
+                {process.env.NODE_ENV === 'development' && formData.locationCoordinates && (
+                  <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
+                    <p>Coordinates: {JSON.stringify(formData.locationCoordinates)}</p>
+                    <p>City: {formData.city}</p>
+                  </div>
                 )}
               </div>
             )}
