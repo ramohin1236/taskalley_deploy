@@ -485,7 +485,7 @@ const TaskDetails = ({ task }) => {
                        
                       </div>
                            <p className=" text-gray-400 text-xl mb-2">
-                          ₦{bid.price}
+                          ₦ {bid.price}
                         </p>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="flex items-center gap-1">

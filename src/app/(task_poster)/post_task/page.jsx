@@ -436,7 +436,10 @@ const TaskCreationApp = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <StepHeader icon={DollarSign} title="Budget" />
+            <div className="flex gap-4 items-center">
+               <p className="text-2xl font-bold text-[#115e59]">₦</p>
+            <p className="text-2xl font-semibold">Budget</p>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 How much are you offering? *

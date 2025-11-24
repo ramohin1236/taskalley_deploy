@@ -21,30 +21,36 @@ const AllServicePage = ({ filters }) => {
     sortBy: filters.sort || "",
   });
 
-  const filteredTasks = React.useMemo(() => {
-    if (!tasksData?.data?.result) return [];
+const filteredTasks = React.useMemo(() => {
+  if (!tasksData?.data?.result) return [];
+  
+  let tasks = tasksData.data.result;
+  
+  // Price filter
+  if (filters.minPrice || filters.maxPrice) {
+    tasks = tasks.filter(task => {
+      const taskBudget = task.budget || 0;
+      const minPrice = parseInt(filters.minPrice) || 0;
+      const maxPrice = parseInt(filters.maxPrice) || Infinity;
+      
+      return taskBudget >= minPrice && taskBudget <= maxPrice;
+    });
+  }
+  
+  // Location and distance filter
+  if (filters.location && filters.location.location) {
+    const searchLocation = filters.location.location.toLowerCase();
+    const searchDistance = filters.location.distance || 20;
     
-    let tasks = tasksData.data.result;
-    
-    if (filters.minPrice || filters.maxPrice) {
-      tasks = tasks.filter(task => {
-        const taskBudget = task.budget || 0;
-        const minPrice = parseInt(filters.minPrice) || 0;
-        const maxPrice = parseInt(filters.maxPrice) || Infinity;
-        
-        return taskBudget >= minPrice && taskBudget <= maxPrice;
-      });
-    }
-    
-    if (filters.location) {
-      tasks = tasks.filter(task => 
-        task.city?.includes(filters.location) || 
-        task.address?.includes(filters.location)
-      );
-    }
-    
-    return tasks;
-  }, [tasksData, filters]);
+    tasks = tasks.filter(task => {
+      const taskLocation = (task.city + ' ' + task.address).toLowerCase();
+      return taskLocation.includes(searchLocation);
+      // এখানে actual distance calculation logic add করতে পারেন
+    });
+  }
+  
+  return tasks;
+}, [tasksData, filters]);
 
 
   const formatTaskData = (task) => {
