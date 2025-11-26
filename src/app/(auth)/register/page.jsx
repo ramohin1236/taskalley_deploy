@@ -2,7 +2,7 @@
 import registration_img from "../../../../public/login_page_image.png";
 import { useRegisterMutation } from "@/lib/features/auth/authApi";
 import main_logo from "../../../../public/main_logo_svg.svg";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-const Register = () => {
+const RegisterContent = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get('role') || 'customer';
   const router = useRouter();
@@ -343,5 +343,11 @@ const Register = () => {
     </section>
   );
 };
+
+const Register = () => (
+  <Suspense fallback={null}>
+    <RegisterContent />
+  </Suspense>
+);
 
 export default Register;

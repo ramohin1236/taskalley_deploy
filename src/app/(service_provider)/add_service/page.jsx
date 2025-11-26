@@ -7,9 +7,10 @@ import { useGetAllCategoriesQuery } from "@/lib/features/category/categoryApi";
 import dynamic from 'next/dynamic';
 
 // Dynamic import for Jodit to avoid SSR issues
-const JoditEditor = dynamic(() => import('jodit-react'), {
+const JoditEditor = dynamic(() => import("jodit-react"), {
   ssr: false,
-  loading: () => <div className="min-h-[300px] border rounded-md p-4 bg-gray-50">Loading editor...</div>
+  // Rendering a null fallback keeps Suspense boundaries quiet during SSR/CSR transitions.
+  loading: () => null,
 });
 
 const AddService = () => {
