@@ -1,14 +1,13 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import service_main_image from "../../../../../../public/main_home.jpg";
-import service_second from "../../../../../../public/service_second.png";
 import Image from "next/image";
 import ServiceTabs from "@/components/serviceprovider/ServiceTabs";
 import { PiNotePencilFill } from "react-icons/pi";
-import { MdBlock } from "react-icons/md";
+import { MdBlock, MdCheckCircle } from "react-icons/md";
 import { useParams } from "next/navigation";
-import { useGetServiceByIdQuery } from "@/lib/features/providerService/providerServiceApi";
+import { useGetServiceByIdQuery, useToggleServiceActiveInactiveMutation } from "@/lib/features/providerService/providerServiceApi";
+import { toast } from "sonner";
 
 const ListMyServiceDetails = () => {
   const [activeTab, setActiveTab] = useState("Description");
@@ -22,10 +21,29 @@ const ListMyServiceDetails = () => {
     data: serviceData, 
     isLoading, 
     error, 
-    isError 
+    isError,
+    refetch
   } = useGetServiceByIdQuery(serviceId);
 
+  const [toggleServiceActiveInactive, { isLoading: isToggling }] = useToggleServiceActiveInactiveMutation();
+
   const info = serviceData?.data
+
+  const handleToggleActiveInactive = async () => {
+    try {
+      const result = await toggleServiceActiveInactive(serviceId).unwrap();
+      if (result?.success) {
+        toast.success(result.message || (info?.isActive ? "Service deactivated successfully" : "Service activated successfully"));
+        refetch(); 
+      } else {
+        toast.error(result?.message || "Failed to update service status");
+      }
+    } catch (error) {
+      const errorMessage = error?.data?.message || error?.message || "Failed to update service status";
+      toast.error(errorMessage);
+      console.error("Error toggling service status:", error);
+    }
+  };
 
   // console.log("serviceData",info)
 
@@ -130,8 +148,33 @@ const ListMyServiceDetails = () => {
               <button className="lg:flex-1 text-center px-4 py-3 border border-[#115e59] text-[#115e59] rounded-md hover:bg-teal-50 cursor-pointer flex items-center gap-3 justify-center">
                 <PiNotePencilFill /> Update Details
               </button>
-              <button className="lg:flex-1 text-center px-4 py-3 border border-red-500 text-red-500 rounded-md hover:bg-red-50 cursor-pointer flex items-center gap-3 justify-center">
-                <MdBlock /> Inactive
+              <button 
+                onClick={handleToggleActiveInactive}
+                disabled={isToggling || isLoading}
+                className={`lg:flex-1 text-center px-4 py-3 border rounded-md cursor-pointer flex items-center gap-3 justify-center transition-colors ${
+                  info?.isActive
+                    ? "border-red-500 text-red-500 hover:bg-red-50"
+                    : "border-green-500 text-green-500 hover:bg-green-50"
+                } ${isToggling || isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isToggling ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    {info?.isActive ? "Deactivating..." : "Activating..."}
+                  </>
+                ) : (
+                  <>
+                    {info?.isActive ? (
+                      <>
+                        <MdBlock /> Deactivate
+                      </>
+                    ) : (
+                      <>
+                        <MdCheckCircle /> Activate
+                      </>
+                    )}
+                  </>
+                )}
               </button>
             </div>
           </div>

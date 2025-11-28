@@ -5,6 +5,7 @@ import "../globals.css";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
 import ProviderProtectedRoute from "@/components/auth/ProviderProtectedRoute";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +19,17 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   return (
-    // Remove html and body tags from route group layout
+ 
     <ProviderProtectedRoute>
       <Navbar />
       <div className="">{children}</div>
       <Footer />
+      <Toaster 
+        position="top-right"
+        expand={true}
+        richColors
+       
+      />
     </ProviderProtectedRoute>
   );
 }

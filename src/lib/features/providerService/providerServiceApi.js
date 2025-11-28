@@ -3,7 +3,7 @@ import { getTokens } from "@/utils/auth";
 import baseUrl from "../../../../utils/baseUrl";
 
 const providerServiceApi = createApi({
-  reducerPath: "serviceApi",
+  reducerPath: "providerServiceApi",
   baseQuery: fetchBaseQuery({
     baseUrl: `${baseUrl()}`,
     prepareHeaders: (headers, { getState }) => {
@@ -46,13 +46,22 @@ const providerServiceApi = createApi({
       }),
       providesTags: ["ProviderService"], 
     }),
+
+    toggleServiceActiveInactive: builder.mutation({
+      query: (serviceId) => ({
+        url: `/service/active-inactive/${serviceId}`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["ProviderService"],
+    }),
   }),
 });
 
 export const { 
   useCreateServiceMutation, 
   useGetMyServiceQuery, 
-  useGetServiceByIdQuery 
+  useGetServiceByIdQuery,
+  useToggleServiceActiveInactiveMutation
 } = providerServiceApi;
 
 export default providerServiceApi;
