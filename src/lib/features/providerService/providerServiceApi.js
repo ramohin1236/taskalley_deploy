@@ -62,6 +62,18 @@ const providerServiceApi = createApi({
       }),
       invalidatesTags: ["ProviderService"],
     }),
+
+    updateService: builder.mutation({
+      query: (formData) => {
+        console.log("Update Service Form Data From API Layer:", formData);
+        return {
+          url: "/service/update-service",
+          method: "PATCH",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["ProviderService"],
+    }),
   }),
 });
 
@@ -70,7 +82,8 @@ export const {
   useGetMyServiceQuery, 
   useGetServiceByIdQuery,
   useToggleServiceActiveInactiveMutation,
-  useDeleteServiceMutation
+  useDeleteServiceMutation,
+  useUpdateServiceMutation
 } = providerServiceApi;
 
 export default providerServiceApi;

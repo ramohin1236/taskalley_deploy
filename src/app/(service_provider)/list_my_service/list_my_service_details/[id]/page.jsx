@@ -4,14 +4,18 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { AlertCircle, ImageOff, Loader2 } from "lucide-react";
+import { MdBlock, MdCheckCircle } from "react-icons/md";
+import { toast } from "sonner";
 
 import InfoProvider from "@/components/serviceprovider/InfoProvider";
 import ServiceTabs from "@/components/serviceprovider/ServiceTabs";
 import BookingCard from "@/components/serviceprovider/BookingCard";
-import { useGetServiceByIdQuery } from "@/lib/features/providerService/providerServiceApi";
+import { useGetServiceByIdQuery, useToggleServiceActiveInactiveMutation } from "@/lib/features/providerService/providerServiceApi";
+import AddService from "@/app/(service_provider)/add_service/page";
 
 const ServiceDetails = () => {
   const [activeTab, setActiveTab] = useState("Description");
+  const [showUpdateForm, setShowUpdateForm] = useState(false);
   const params = useParams();
   const serviceId = params?.id;
 
@@ -23,7 +27,25 @@ const ServiceDetails = () => {
     refetch,
   } = useGetServiceByIdQuery(serviceId, { skip: !serviceId });
 
+  const [toggleServiceActiveInactive, { isLoading: isToggling }] = useToggleServiceActiveInactiveMutation();
+
   const service = singleService?.data;
+
+  const handleToggleActiveInactive = async () => {
+    try {
+      const result = await toggleServiceActiveInactive(serviceId).unwrap();
+      if (result?.success) {
+        toast.success(result.message || (service?.isActive ? "Service deactivated successfully" : "Service activated successfully"));
+        refetch();
+      } else {
+        toast.error(result?.message || "Failed to update service status");
+      }
+    } catch (error) {
+      const errorMessage = error?.data?.message || error?.message || "Failed to update service status";
+      toast.error(errorMessage);
+      console.error("Error toggling service status:", error);
+    }
+  };
 
   const galleryImages = useMemo(() => {
     // Only show actual service images, no dummy images
@@ -63,6 +85,30 @@ const ServiceDetails = () => {
 
   if (!service) {
     return null;
+  }
+
+  const handleUpdateSuccess = () => {
+    setShowUpdateForm(false);
+    refetch();
+    toast.success("Service updated successfully!");
+  };
+
+  const handleCancelUpdate = () => {
+    setShowUpdateForm(false);
+  };
+
+  // Show update form if showUpdateForm is true
+  if (showUpdateForm) {
+    return (
+      <div className="project_container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <AddService 
+          serviceData={service}
+          isUpdateMode={true}
+          onSuccess={handleUpdateSuccess}
+          onCancel={handleCancelUpdate}
+        />
+      </div>
+    );
   }
 
   return (
@@ -141,6 +187,49 @@ const ServiceDetails = () => {
               setActiveTab={setActiveTab}
               service={service}
             />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button 
+                onClick={() => setShowUpdateForm(true)}
+                className="flex-1 text-center px-4 py-3 border border-[#115e59] text-[#115e59] rounded-md hover:bg-teal-50 cursor-pointer flex items-center gap-3 justify-center transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Update Details
+              </button>
+              <button 
+                onClick={handleToggleActiveInactive}
+                disabled={isToggling || isLoading}
+                className={`flex-1 text-center px-4 py-3 border rounded-md cursor-pointer flex items-center gap-3 justify-center transition-colors ${
+                  service?.isActive
+                    ? "border-red-500 text-red-500 hover:bg-red-50"
+                    : "border-green-500 text-green-500 hover:bg-green-50"
+                } ${isToggling || isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                {isToggling ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    {service?.isActive ? "Deactivating..." : "Activating..."}
+                  </>
+                ) : (
+                  <>
+                    {service?.isActive ? (
+                      <>
+                        <MdBlock className="w-5 h-5" /> Deactivate
+                      </>
+                    ) : (
+                      <>
+                        <MdCheckCircle className="w-5 h-5" /> Activate
+                      </>
+                    )}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 

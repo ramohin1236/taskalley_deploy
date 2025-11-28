@@ -1,9 +1,10 @@
 "use client"
 
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Plus, Upload, X } from "lucide-react";
-import { useCreateServiceMutation } from "@/lib/features/providerService/providerServiceApi";
+import { useCreateServiceMutation, useUpdateServiceMutation } from "@/lib/features/providerService/providerServiceApi";
 import { useGetAllCategoriesQuery } from "@/lib/features/category/categoryApi";
+import { toast } from "sonner";
 import dynamic from 'next/dynamic';
 
 // Dynamic import for Jodit to avoid SSR issues
@@ -13,7 +14,7 @@ const JoditEditor = dynamic(() => import("jodit-react"), {
   loading: () => null,
 });
 
-const AddService = () => {
+const AddService = ({ serviceData = null, isUpdateMode = false, onSuccess = null, onCancel = null }) => {
   const [formData, setFormData] = useState({
     serviceTitle: "",
     startingPrice: "",
@@ -22,14 +23,38 @@ const AddService = () => {
     serviceDescription: ""
   });
   
+  const [existingImages, setExistingImages] = useState([]);
+  const [deletedImages, setDeletedImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  
   const { data: categoriesData, error: categoriesError } = useGetAllCategoriesQuery();
-  const [createService, { isLoading, error: createError }] = useCreateServiceMutation();
+  const [createService, { isLoading: isCreating }] = useCreateServiceMutation();
+  const [updateService, { isLoading: isUpdating }] = useUpdateServiceMutation();
+  
+  const isLoading = isCreating || isUpdating;
   
   const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const fileInputRef = useRef(null);
   const editorRef = useRef(null);
+
+  // Pre-fill form when in update mode
+  useEffect(() => {
+    if (isUpdateMode && serviceData) {
+      setFormData({
+        serviceTitle: serviceData.title || "",
+        startingPrice: serviceData.price?.toString() || "",
+        serviceCategory: serviceData.category?._id || serviceData.category || "",
+        serviceImage: null,
+        serviceDescription: serviceData.description || ""
+      });
+      
+      if (serviceData.images && serviceData.images.length > 0) {
+        setExistingImages(serviceData.images.filter(img => img && img.trim() !== ''));
+      }
+    }
+  }, [isUpdateMode, serviceData]);
 
   const editorConfig = useMemo(() => ({
     readonly: false,
@@ -73,51 +98,40 @@ const AddService = () => {
   };
 
   const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      if (!file.type.startsWith('image/')) {
+    const files = Array.from(event.target.files);
+    if (files.length > 0) {
+      const validFiles = files.filter(file => {
+        if (!file.type.startsWith('image/')) {
+          toast.error("Please select valid image files only");
+          return false;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+          toast.error(`${file.name} is larger than 5MB`);
+          return false;
+        }
+        return true;
+      });
+
+      if (validFiles.length > 0) {
+        setNewImages(prev => [...prev, ...validFiles]);
         setErrors(prev => ({
           ...prev,
-          serviceImage: "Please select a valid image file"
+          serviceImage: ""
         }));
-        return;
       }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors(prev => ({
-          ...prev,
-          serviceImage: "Image size should be less than 5MB"
-        }));
-        return;
-      }
-
-      setFormData(prev => ({
-        ...prev,
-        serviceImage: file
-      }));
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-
-      setErrors(prev => ({
-        ...prev,
-        serviceImage: ""
-      }));
     }
-  };
-
-  const removeImage = () => {
-    setFormData(prev => ({
-      ...prev,
-      serviceImage: null
-    }));
-    setImagePreview(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const removeExistingImage = (imageUrl) => {
+    setExistingImages(prev => prev.filter(img => img !== imageUrl));
+    setDeletedImages(prev => [...prev, imageUrl]);
+  };
+
+  const removeNewImage = (index) => {
+    setNewImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const validateForm = () => {
@@ -149,8 +163,8 @@ const AddService = () => {
       newErrors.serviceDescription = "Description must be at least 10 characters";
     }
 
-    if (!formData.serviceImage) {
-      newErrors.serviceImage = "Service image is required";
+    if (!isUpdateMode && !formData.serviceImage && newImages.length === 0 && existingImages.length === 0) {
+      newErrors.serviceImage = "At least one service image is required";
     }
 
     setErrors(newErrors);
@@ -161,85 +175,111 @@ const handleSubmit = async () => {
   if (!validateForm()) {
     return;
   }
-   const stripHtml = (html) => {
-      const tmp = document.createElement("div");
-      tmp.innerHTML = html;
-      return tmp.textContent || tmp.innerText || "";
-    };
 
   try {
-    const serviceData = {
+    const servicePayload = {
       title: formData.serviceTitle,
       price: Number(formData.startingPrice),
       category: formData.serviceCategory,
-      description: stripHtml(formData.serviceDescription),
-      deletedImages: [], 
+      description: formData.serviceDescription, // Keep HTML for rich text
+      deletedImages: deletedImages,
     };
 
-    const formDataToSend = new FormData();
-    formDataToSend.append('data', JSON.stringify(serviceData));
-
-    if (formData.serviceImage) {
-      formDataToSend.append('service_image', formData.serviceImage);
+    // Add location data if available in update mode
+    if (isUpdateMode && serviceData?.location) {
+      servicePayload.location = serviceData.location;
+    }
+    if (isUpdateMode && serviceData?.address) {
+      servicePayload.address = serviceData.address;
+    }
+    if (isUpdateMode && serviceData?.city) {
+      servicePayload.city = serviceData.city;
     }
 
-    console.log('Submitting form data...', serviceData);
+    const formDataToSend = new FormData();
+    formDataToSend.append('data', JSON.stringify(servicePayload));
 
-    const result = await createService(formDataToSend).unwrap();
+    // Append new images with key 'service_image'
+    newImages.forEach((file) => {
+      formDataToSend.append('service_image', file);
+    });
+
+    console.log('Submitting form data...', servicePayload);
+
+    let result;
+    if (isUpdateMode) {
+      result = await updateService(formDataToSend).unwrap();
+    } else {
+      result = await createService(formDataToSend).unwrap();
+    }
+    
     console.log("API Response:", result);
     
     if (result?.success) {
-      setSuccessMessage("Service added successfully!");
+      const message = isUpdateMode ? "Service updated successfully!" : "Service added successfully!";
+      toast.success(message);
       
-      // Reset form
-      setFormData({
-        serviceTitle: "",
-        startingPrice: "",
-        serviceCategory: "",
-        serviceImage: null,
-        serviceDescription: ""
-      });
-      
-      setImagePreview(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Reset form only if not in update mode
+        if (!isUpdateMode) {
+          setFormData({
+            serviceTitle: "",
+            startingPrice: "",
+            serviceCategory: "",
+            serviceImage: null,
+            serviceDescription: ""
+          });
+          
+          setImagePreview(null);
+          setNewImages([]);
+          setExistingImages([]);
+          setDeletedImages([]);
+          
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+          
+          if (editorRef.current) {
+            editorRef.current.value = '';
+          }
+        }
       }
-      
-      if (editorRef.current) {
-        editorRef.current.value = '';
-      }
-
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 5000);
     }
   } catch (error) {
-    console.error('Failed to create service:', error);
+    console.error(`Failed to ${isUpdateMode ? 'update' : 'create'} service:`, error);
     
-    if (error?.data?.success === false) {
-      setErrors(prev => ({
-        ...prev,
-        submit: error.data?.message || "Failed to add service. Please try again."
-      }));
-    } else {
-      setErrors(prev => ({
-        ...prev,
-        submit: "Failed to add service. Please try again."
-      }));
-    }
+    const errorMessage = error?.data?.message || error?.message || `Failed to ${isUpdateMode ? 'update' : 'add'} service. Please try again.`;
+    toast.error(errorMessage);
+    
+    setErrors(prev => ({
+      ...prev,
+      submit: errorMessage
+    }));
   }
 };
 
   return (
     <div className="project_container px-6 bg-white p-6 md:p-8">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-8 h-8 bg-green-800 rounded-lg flex items-center justify-center">
-          <Plus className="w-5 h-5 text-white" />
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-green-800 rounded-lg flex items-center justify-center">
+            <Plus className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
+            {isUpdateMode ? "Update Service" : "Add Service"}
+          </h1>
         </div>
-        <h1 className="text-xl md:text-2xl font-semibold text-gray-900">
-          Add Service
-        </h1>
+        {isUpdateMode && onCancel && (
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+        )}
       </div>
 
       {/* Form */}
@@ -252,45 +292,84 @@ const handleSubmit = async () => {
         )}
 
         {/* Image Upload */}
-        <div className="space-y-2">
+        <div className="space-y-4">
           <label className="block text-sm font-medium text-gray-700">
-            Service Image
+            Service Images {isUpdateMode && "(You can add more or remove existing)"}
           </label>
           
-          {!imagePreview ? (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer hover:border-green-800 hover:bg-green-80 transition-colors"
-            >
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-16 h-16 bg-green-50 rounded-lg flex items-center justify-center">
-                  <Upload className="w-8 h-8 text-green-800" />
-                </div>
-                <div>
-                  <p className="text-gray-600 font-medium">
-                    + Upload Your Service Image
-                  </p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    PNG, JPG, GIF up to 5MB
-                  </p>
-                </div>
+          {/* Existing Images (Update Mode) */}
+          {isUpdateMode && existingImages.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600 font-medium">Existing Images:</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {existingImages.map((imgUrl, index) => (
+                  <div key={index} className="relative group">
+                    <div className="w-full h-32 md:h-40 rounded-lg overflow-hidden border border-gray-200">
+                      <img
+                        src={imgUrl}
+                        alt={`Service image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      onClick={() => removeExistingImage(imgUrl)}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                      title="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
-          ) : (
-            <div className="relative">
-              <div className="w-44 h-44 lg:w-72 lg:h-72">
-                <img
-                  src={imagePreview}
-                  alt="Service preview"
-                  className="w-full h-full object-cover rounded-lg border-gray-200"
-                />
+          )}
+
+          {/* New Images Preview */}
+          {newImages.length > 0 && (
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600 font-medium">New Images:</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {newImages.map((file, index) => (
+                  <div key={index} className="relative group">
+                    <div className="w-full h-32 md:h-40 rounded-lg overflow-hidden border border-gray-200">
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt={`New image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      onClick={() => removeNewImage(index)}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                      title="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
-              <button
-                onClick={removeImage}
-                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+            </div>
+          )}
+          
+          {/* Upload Area */}
+          {(existingImages.length === 0 && newImages.length === 0) || (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-green-800 hover:bg-green-50 transition-colors"
+            >
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
+                  <Upload className="w-6 h-6 text-green-800" />
+                </div>
+                <div>
+                  <p className="text-gray-600 font-medium text-sm">
+                    + Add More Images
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    PNG, JPG, GIF up to 5MB each
+                  </p>
+                </div>
+              </div>
             </div>
           )}
           
@@ -298,6 +377,7 @@ const handleSubmit = async () => {
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            multiple
             onChange={handleImageUpload}
             className="hidden"
           />
@@ -409,24 +489,35 @@ const handleSubmit = async () => {
 
 
         {/* Submit Button */}
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className={`w-full cursor-pointer md:w-auto px-8 py-3 rounded-md font-medium transition-colors ${
-            isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-[#00786f] hover:bg-green-800 active:bg-green-800'
-          } text-white`}
-        >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Creating Service...
-            </div>
-          ) : (
-            'Create Service'
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className={`flex-1 cursor-pointer px-8 py-3 rounded-md font-medium transition-colors ${
+              isLoading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[#00786f] hover:bg-green-800 active:bg-green-800'
+            } text-white`}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                {isUpdateMode ? 'Updating Service...' : 'Creating Service...'}
+              </div>
+            ) : (
+              isUpdateMode ? 'Update Service' : 'Create Service'
+            )}
+          </button>
+          {isUpdateMode && onCancel && (
+            <button
+              onClick={onCancel}
+              disabled={isLoading}
+              className="px-8 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
           )}
-        </button>
+        </div>
       </div>
     </div>
   );

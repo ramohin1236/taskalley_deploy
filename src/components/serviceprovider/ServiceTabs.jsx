@@ -31,7 +31,7 @@ const ServiceTabs = ({ activeTab, setActiveTab, service, info }) => {
       case "Description":
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Service Description</h3>
+          
             {serviceData?.description ? (
               <div 
                 className="service-description text-gray-700 leading-relaxed"
