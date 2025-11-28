@@ -54,6 +54,14 @@ const providerServiceApi = createApi({
       }),
       invalidatesTags: ["ProviderService"],
     }),
+
+    deleteService: builder.mutation({
+      query: (serviceId) => ({
+        url: `/service/delete-service/${serviceId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["ProviderService"],
+    }),
   }),
 });
 
@@ -61,7 +69,8 @@ export const {
   useCreateServiceMutation, 
   useGetMyServiceQuery, 
   useGetServiceByIdQuery,
-  useToggleServiceActiveInactiveMutation
+  useToggleServiceActiveInactiveMutation,
+  useDeleteServiceMutation
 } = providerServiceApi;
 
 export default providerServiceApi;
