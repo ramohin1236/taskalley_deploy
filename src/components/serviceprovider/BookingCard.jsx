@@ -55,7 +55,7 @@ const BookingCard = ({ signgleServiceData }) => {
       </div>
 
       {/* Additional Info */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      {/* <div className="bg-white rounded-lg shadow-sm p-6">
         <h3 className="font-semibold text-gray-900 mb-4">Why Choose Us?</h3>
         <div className="space-y-3 text-sm text-gray-600">
           <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ const BookingCard = ({ signgleServiceData }) => {
             <span>{signgleServiceData?.city || "City"} Coverage</span>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

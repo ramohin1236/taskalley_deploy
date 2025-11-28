@@ -1,7 +1,12 @@
 // components/serviceprovider/ServiceTabs.jsx
-import { CheckCircle } from "lucide-react";
 import React from "react";
-
+import {
+  CheckCircle,
+  Clock,
+  MapPin,
+  Shield,
+  Tag,
+} from "lucide-react";
 
 const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
   const tabs = [
@@ -9,6 +14,14 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
     { id: "Details", label: "Service Details" },
     { id: "Reviews", label: "Reviews" },
   ];
+
+  const createdAt = service?.createdAt
+    ? new Date(service.createdAt).toLocaleDateString()
+    : null;
+
+  const updatedAt = service?.updatedAt
+    ? new Date(service.updatedAt).toLocaleDateString()
+    : null;
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -26,47 +39,46 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-gray-900">Service Details</h3>
-            
-            {/* Service Features */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <Tool className="w-5 h-5 text-[#115e59]" />
-                <div>
-                  <p className="font-medium">Tools Provided</p>
-                  <p className="text-sm text-gray-600">
-                    {service?.toolsProvided ? "Yes" : "No"}
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-[#115e59]" />
-                <div>
-                  <p className="font-medium">On-site Support</p>
-                  <p className="text-sm text-gray-600">
-                    {service?.onSiteSupport ? "Yes" : "No"}
-                  </p>
-                </div>
-              </div>
-              
-              {service?.languages && service.languages.length > 0 && (
-                <div className="flex items-center gap-3">
-                  <Languages className="w-5 h-5 text-[#115e59]" />
-                  <div>
-                    <p className="font-medium">Languages</p>
-                    <p className="text-sm text-gray-600">
-                      {service.languages.join(", ")}
-                    </p>
-                  </div>
-                </div>
-              )}
+              <DetailItem
+                icon={<Tag className="w-5 h-5 text-[#115e59]" />}
+                label="Category"
+                value={service?.category?.name || "Not specified"}
+              />
+              <DetailItem
+                icon={<Shield className="w-5 h-5 text-[#115e59]" />}
+                label="Status"
+                value={service?.status || "Pending"}
+              />
+              <DetailItem
+                icon={<CheckCircle className="w-5 h-5 text-[#115e59]" />}
+                label="Active"
+                value={service?.isActive ? "Active" : "Inactive"}
+              />
+              <DetailItem
+                icon={<Clock className="w-5 h-5 text-[#115e59]" />}
+                label="Created"
+                value={createdAt || "Not available"}
+              />
+              <DetailItem
+                icon={<Clock className="w-5 h-5 text-[#115e59]" />}
+                label="Last Updated"
+                value={updatedAt || "Not available"}
+              />
+              <DetailItem
+                icon={<MapPin className="w-5 h-5 text-[#115e59]" />}
+                label="Service Area"
+                value={service?.city || service?.address || "Not specified"}
+              />
             </div>
 
-            {/* Availability */}
-            {service?.availability && (
-              <div>
-                <h4 className="font-medium text-gray-900 mb-2">Availability</h4>
-                <p className="text-gray-700">{service.availability}</p>
+            {service?.description && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <p className="text-sm text-gray-600">
+                  More about this service:
+                </p>
+                <p className="text-gray-800 mt-2">{service.description}</p>
               </div>
             )}
           </div>
@@ -77,8 +89,8 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
             <p className="text-gray-600">
-              {service?.totalReviews 
-                ? `This service has ${service.totalReviews} reviews.`
+              {service?.totalRating
+                ? `This service has ${service.totalRating} reviews.`
                 : "No reviews yet."
               }
             </p>
@@ -119,5 +131,15 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
     </div>
   );
 };
+
+const DetailItem = ({ icon, label, value }) => (
+  <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-4">
+    {icon}
+    <div>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="font-medium text-gray-900">{value}</p>
+    </div>
+  </div>
+);
 
 export default ServiceTabs;

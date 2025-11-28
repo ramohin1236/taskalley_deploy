@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getTokens } from "@/utils/auth";
 import baseUrl from "../../../../utils/baseUrl";
 
 const serviceApi = createApi({
