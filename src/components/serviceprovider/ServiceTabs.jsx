@@ -8,19 +8,22 @@ import {
   Tag,
 } from "lucide-react";
 
-const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
+const ServiceTabs = ({ activeTab, setActiveTab, service, info }) => {
+  // Support both 'service' and 'info' props
+  const serviceData = service || info;
+  
   const tabs = [
     { id: "Description", label: "Description" },
     { id: "Details", label: "Service Details" },
     { id: "Reviews", label: "Reviews" },
   ];
 
-  const createdAt = service?.createdAt
-    ? new Date(service.createdAt).toLocaleDateString()
+  const createdAt = serviceData?.createdAt
+    ? new Date(serviceData.createdAt).toLocaleDateString()
     : null;
 
-  const updatedAt = service?.updatedAt
-    ? new Date(service.updatedAt).toLocaleDateString()
+  const updatedAt = serviceData?.updatedAt
+    ? new Date(serviceData.updatedAt).toLocaleDateString()
     : null;
 
   const renderTabContent = () => {
@@ -29,9 +32,17 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Service Description</h3>
-            <p className="text-gray-700 leading-relaxed">
-              {service?.description || "No description available."}
-            </p>
+            {serviceData?.description ? (
+              <div 
+                className="service-description text-gray-700 leading-relaxed"
+                style={{
+                  lineHeight: '1.75'
+                }}
+                dangerouslySetInnerHTML={{ __html: serviceData.description }}
+              />
+            ) : (
+              <p className="text-gray-700 leading-relaxed">No description available.</p>
+            )}
           </div>
         );
 
@@ -44,17 +55,17 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
               <DetailItem
                 icon={<Tag className="w-5 h-5 text-[#115e59]" />}
                 label="Category"
-                value={service?.category?.name || "Not specified"}
+                value={serviceData?.category?.name || "Not specified"}
               />
               <DetailItem
                 icon={<Shield className="w-5 h-5 text-[#115e59]" />}
                 label="Status"
-                value={service?.status || "Pending"}
+                value={serviceData?.status || "Pending"}
               />
               <DetailItem
                 icon={<CheckCircle className="w-5 h-5 text-[#115e59]" />}
                 label="Active"
-                value={service?.isActive ? "Active" : "Inactive"}
+                value={serviceData?.isActive ? "Active" : "Inactive"}
               />
               <DetailItem
                 icon={<Clock className="w-5 h-5 text-[#115e59]" />}
@@ -69,16 +80,22 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
               <DetailItem
                 icon={<MapPin className="w-5 h-5 text-[#115e59]" />}
                 label="Service Area"
-                value={service?.city || service?.address || "Not specified"}
+                value={serviceData?.city || serviceData?.address || "Not specified"}
               />
             </div>
 
-            {service?.description && (
+            {serviceData?.description && (
               <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 mb-3">
                   More about this service:
                 </p>
-                <p className="text-gray-800 mt-2">{service.description}</p>
+                <div 
+                  className="service-description text-gray-800"
+                  style={{
+                    lineHeight: '1.75'
+                  }}
+                  dangerouslySetInnerHTML={{ __html: serviceData.description }}
+                />
               </div>
             )}
           </div>
@@ -89,8 +106,8 @@ const ServiceTabs = ({ activeTab, setActiveTab, service }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Customer Reviews</h3>
             <p className="text-gray-600">
-              {service?.totalRating
-                ? `This service has ${service.totalRating} reviews.`
+              {serviceData?.totalRating
+                ? `This service has ${serviceData.totalRating} reviews.`
                 : "No reviews yet."
               }
             </p>

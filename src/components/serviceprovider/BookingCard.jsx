@@ -1,19 +1,23 @@
 "use client";
 
 import React from "react";
-import { MapPin, Clock, Shield, MessageCircle } from "lucide-react";
+import { MapPin, Clock, Shield, MessageCircle, CloudCog } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const BookingCard = ({ signgleServiceData }) => {
   const router = useRouter();
-  
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+  const providerUsr = user.role
+  console.log("User:", user);
+
   console.log("Provider ID:", signgleServiceData?.provider?._id);
 
   const handleSubmitOffer = () => {
     const providerId = signgleServiceData?.provider?._id;
-    
+
     if (!providerId) {
       toast.warning("Provider information not available");
       return;
@@ -36,22 +40,32 @@ const BookingCard = ({ signgleServiceData }) => {
           ₦ {signgleServiceData?.price || "24.00"}
         </div>
 
-        <div className="space-y-3">
-          <Link 
-            href="/chat" 
-            className="w-full flex items-center justify-center gap-2 bg-white border px-4 py-3 rounded-lg hover:bg-teal-50 transition-colors border-teal-700 text-teal-700"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Chat Now
-          </Link>
+        {
+          providerUsr === "provider" ?
+            <></>
+            :
+            <>
+              <div className="space-y-3">
 
-          <button 
-            onClick={handleSubmitOffer}
-            className="w-full bg-[#00786f] hover:bg-[#074641] cursor-pointer text-white px-4 py-3 rounded-lg font-medium transition-colors"
-          >
-            Submit a Offer
-          </button>
-        </div>
+                <Link
+                  href="/chat"
+                  className="w-full flex items-center justify-center gap-2 bg-white border px-4 py-3 rounded-lg hover:bg-teal-50 transition-colors border-teal-700 text-teal-700"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Chat Now
+                </Link>
+
+                <button
+                  onClick={handleSubmitOffer}
+                  className="w-full bg-[#00786f] hover:bg-[#074641] cursor-pointer text-white px-4 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Submit a Offer
+                </button>
+              </div>
+            </>
+        }
+
+
       </div>
 
       {/* Additional Info */}

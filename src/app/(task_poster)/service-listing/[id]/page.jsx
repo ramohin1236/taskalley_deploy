@@ -28,10 +28,11 @@ const ServiceDetails = () => {
   const service = singleService?.data;
 
   const galleryImages = useMemo(() => {
+    // Only show actual service images, no dummy images
     if (service?.images?.length) {
-      return service.images;
+      return service.images.filter(img => img && img.trim() !== '');
     }
-    return [service_main_image, service_second];
+    return [];
   }, [service?.images]);
 
   if (isLoading) {
@@ -85,52 +86,48 @@ const ServiceDetails = () => {
         </div>
 
         {/* Image Grid */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Main large image */}
-          <div className="flex-1 min-h-[280px] lg:min-h-[420px] relative">
-            {heroImage ? (
+        {galleryImages.length > 0 ? (
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Main large image */}
+            <div className="flex-1 min-h-[280px] lg:min-h-[420px] relative rounded-lg overflow-hidden">
               <Image
-                src={heroImage}
+                src={galleryImages[0]}
                 fill
                 sizes="(min-width: 1024px) 60vw, 100vw"
                 alt={service?.title || "Service image"}
                 className="rounded-lg object-cover"
                 priority
               />
-            ) : (
-              <div className="w-full h-full rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
-                <ImageOff className="w-10 h-10" />
-              </div>
-            )}
-          </div>
+            </div>
 
-          <div className="flex-1 grid grid-cols-2 gap-4">
-            {secondaryImages.map((img, index) => {
-              const key = typeof img === "string" ? img : img?.src || index;
-              return (
-              <div key={key} className="relative h-32 md:h-48">
-                <Image
-                  src={img}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, 50vw"
-                  alt={`${service?.title || "Service"} - ${index + 2}`}
-                  className="rounded-lg object-cover"
-                />
-              </div>
-            )})}
-            {!secondaryImages.length && (
-              <div className="col-span-2 relative h-32 md:h-48">
-                <Image
-                  src={service_second}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, 50vw"
-                  alt="Service secondary image"
-                  className="rounded-lg object-cover"
-                />
+            {/* Secondary images */}
+            {galleryImages.length > 1 && (
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                {galleryImages.slice(1, 5).map((img, index) => {
+                  const key = typeof img === "string" ? img : img?.src || index;
+                  return (
+                    <div key={key} className="relative h-32 md:h-48 lg:h-52 rounded-lg overflow-hidden">
+                      <Image
+                        src={img}
+                        fill
+                        sizes="(min-width: 1024px) 30vw, 50vw"
+                        alt={`${service?.title || "Service"} - ${index + 2}`}
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
-        </div>
+        ) : (
+          <div className="w-full min-h-[280px] lg:min-h-[420px] rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
+            <div className="text-center">
+              <ImageOff className="w-16 h-16 mx-auto mb-2" />
+              <p className="text-sm">No images available</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
