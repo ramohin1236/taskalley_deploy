@@ -105,6 +105,8 @@ const Progress = ({
         assignedTo={assignedTo}
         location={location}
         dateLabel={dateLabel}
+        taskDetails={taskDetails}
+        bidsData={bidsData}
       />
 
       <TaskDetailsSection description={description} />

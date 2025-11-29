@@ -29,8 +29,9 @@ const questions = [
 ];
 
 const Bids = ({ taskDetails, bidsData, questionsData }) => {
-  console.log("questionsData",questionsData?.data)
+ 
   const info = bidsData?.data.result
+
   const [activeTab, setActiveTab] = useState("bids");
   const [acceptBid, { isLoading: isAcceptingBid }] = useAcceptBidMutation();
   
@@ -90,15 +91,24 @@ const Bids = ({ taskDetails, bidsData, questionsData }) => {
   };
 
   const handleChatClick = (bid) => {
-    let receiverId = null;
-    
-    if (user?.role === "customer") {
-      // Customer wants to chat with the provider who placed the bid
-      receiverId = bid?.provider?._id || bid?.provider || bid?.providerId;
-    } else if (user?.role === "provider") {
-      // Provider wants to chat with the task owner (customer)
-      receiverId = taskDetails?.customer?._id || taskDetails?.customer || taskDetails?.customerId;
+    console.log("clickk",bid)
+   
+    if ((taskStatus || taskDetails?.status) !== "IN_PROGRESS") {
+      toast.info("Chat is available only while the task is In Progress.");
+      return;
     }
+
+    // Determine receiverId - pick the other participant (not the current user)
+    const providerId = bid?.provider?._id || bid?.provider || bid?.providerId;
+    const customerId = taskDetails?.customer?._id || taskDetails?.customer || taskDetails?.customerId;
+    let resolvedReceiverId = null;
+    // If both exist, prefer the other user
+    if (providerId && customerId) {
+      resolvedReceiverId = (providerId === user?._id || providerId === user?.id) ? customerId : providerId;
+    } else {
+      resolvedReceiverId = providerId || customerId;
+    }
+    const receiverId = resolvedReceiverId;
 
     if (!receiverId) {
       toast.error("Unable to find user to chat with");

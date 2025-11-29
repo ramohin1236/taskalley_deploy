@@ -43,7 +43,6 @@ const ChatDetails = () => {
   const params = useParams();
   const userId = params.id;
   
-  // Find the user based on ID
   const user = userData.find(u => u.id === userId);
 
   if (!user) {

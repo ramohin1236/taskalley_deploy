@@ -19,7 +19,7 @@ const CancellationStatusComponent = ({ taskId, taskDetails, isServiceProvider = 
 
   const cancellationRequest = cancellationData?.data;
 
-  console.log("Cancellation Request Data:", cancellationRequest);
+  // console.log("Cancellation Request Data:", cancellationRequest);
 
   if (!cancellationRequest || cancellationRequest.status !== "PENDING") {
     return null;
