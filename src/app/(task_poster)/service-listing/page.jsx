@@ -124,7 +124,6 @@ const ServiceListing = () => {
     );
   }
 
-  // Filter out inactive services - only show active services
   const allServices = servicesData?.data?.result || [];
   const services = allServices.filter(service => service.isActive === true);
   const meta = servicesData?.data?.meta || {};

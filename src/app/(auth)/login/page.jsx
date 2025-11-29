@@ -3,8 +3,6 @@ import registration_img from "../../../../public/login_page_image.png";
 import main_logo from "../../../../public/main_logo_svg.svg";
 import React, { useState } from "react";
 import Image from "next/image";
-import { FcGoogle } from "react-icons/fc";
-import { FaApple } from "react-icons/fa6";
 import Link from "next/link";
 import { useLoginUserMutation } from "@/lib/features/auth/authApi";
 import { useForm } from "react-hook-form";

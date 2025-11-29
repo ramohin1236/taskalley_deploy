@@ -44,7 +44,7 @@ const ServiceCard = ({ service }) => {
         {/* Description */}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {service.description 
-            ? service.description.replace(/<[^>]*>/g, '').substring(0, 150) + (service.description.length > 150 ? '...' : '')
+            ? service.description.replace(/<[^>]*>/g, '').substring(0, 50) + (service.description.length > 50 ? '...' : '')
             : 'No description available'}
         </p>
 
