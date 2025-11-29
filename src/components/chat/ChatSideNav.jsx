@@ -1,3 +1,4 @@
+// components/chat/ChatSideNav.jsx
 "use client";
 import { Menu, Search, ArrowLeft } from "lucide-react";
 import React, { useState } from "react";
@@ -5,71 +6,59 @@ import { useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import Link from "next/link";
 
-const ChatSideNav = () => {
+const ChatSideNav = ({ onMobileItemClick }) => {
   const router = useRouter();
   
-  const chatUser = [
+  const chatUsers = [
     {
       id: 1,
-      Name: "Lee Williamso",
+      Name: "Lee Williamson",
       short_message: "Hey, are you available for a quick call?",
       image: "https://i.pravatar.cc/150?img=1",
+      email: "lee.williamson@example.com",
+      location: "New York, United States"
     },
     {
       id: 2,
       Name: "Eleanor Pena",
       short_message: "Yes, that's gonna work, hopefully.",
       image: "https://i.pravatar.cc/150?img=2",
+      email: "eleanor.pena@example.com",
+      location: "Los Angeles, United States"
     },
     {
       id: 3,
       Name: "Jacob Jones",
       short_message: "I'll send you the files by tonight.",
       image: "https://i.pravatar.cc/150?img=3",
+      email: "jacob.jones@example.com",
+      location: "Chicago, United States"
     },
     {
       id: 4,
       Name: "Theresa Webb",
       short_message: "Can we move the meeting to tomorrow?",
       image: "https://i.pravatar.cc/150?img=4",
-    },
-    {
-      id: 5,
-      Name: "Courtney Henry",
-      short_message: "Thanks for the update! Much appreciated.",
-      image: "https://i.pravatar.cc/150?img=5",
-    },
-    {
-      id: 6,
-      Name: "Marvin McKinney",
-      short_message: "Let's finalize the design this week.",
-      image: "https://i.pravatar.cc/150?img=6",
-    },
-    {
-      id: 7,
-      Name: "Marvin McKinney",
-      short_message: "Let's finalize the design this week.",
-      image: "https://i.pravatar.cc/150?img=6",
-    },
-    {
-      id: 8,
-      Name: "Marvin McKinney",
-      short_message: "Let's finalize the design this week.",
-      image: "https://i.pravatar.cc/150?img=6",
-    },
-    {
-      id: 9,
-      Name: "Marvin McKinney",
-      short_message: "Let's finalize the design this week.",
-      image: "https://i.pravatar.cc/150?img=6",
-    },
+      email: "theresa.webb@example.com",
+      location: "Miami, United States"
+    }
   ];
+
+  const handleUserClick = (user) => {
+    // URL-এ user ID সহ navigate করুন
+    router.push(`/chat/${user.id}`);
+    
+    // Mobile view হলে sidebar বন্ধ করুন
+    if (onMobileItemClick) {
+      onMobileItemClick();
+    }
+  };
 
   return (
     <>
       {/* Sidebar */}
       <div className="relative pt-36 md:pt-0 ">
-        {/* Mobile Back Button - Moved inside with proper spacing */}
+        {/* Mobile Back Button */}
         <div className="lg:hidden px-2">
           <Link
             href='/'
@@ -94,9 +83,10 @@ const ChatSideNav = () => {
 
         {/* Scrollable Chat List Container */}
         <div className="w-full max-h-[calc(100vh-280px)] lg:max-h-[650px] overflow-y-auto px-2">
-          {chatUser.map((user, index) => (
-            <ul
-              key={index}
+          {chatUsers.map((user) => (
+            <div
+              key={user.id}
+              onClick={() => handleUserClick(user)}
               className="flex items-center gap-3 p-4 hover:bg-[#E6F4F1] cursor-pointer rounded-2xl transition-colors"
             >
               <div className="w-12 h-12 lg:w-16 lg:h-16 flex-shrink-0 overflow-clip">
@@ -111,7 +101,7 @@ const ChatSideNav = () => {
                 <p className="text-base lg:text-xl font-semibold truncate">{user.Name}</p>
                 <p className="text-xs lg:text-sm text-gray-500 truncate">{user.short_message}</p>
               </div>
-            </ul>
+            </div>
           ))}
         </div>
       </div>
