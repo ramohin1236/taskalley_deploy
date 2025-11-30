@@ -9,6 +9,7 @@ import bidApi from './features/bidApi/bidApi';
 import questionApi from './features/question/questionApi';
 import cancellationApi from './features/cancelApi/cancellationApi';
 import providerServiceApi from './features/providerService/providerServiceApi';
+import { chatApi } from './features/chatApi/chatApi';
 
 export const makeStore = () =>
   configureStore({
@@ -22,8 +23,8 @@ export const makeStore = () =>
       [bidApi.reducerPath]: bidApi.reducer,
       [questionApi.reducerPath]: questionApi.reducer,
       [cancellationApi.reducerPath]: cancellationApi.reducer,
-      [providerServiceApi.reducerPath]: providerServiceApi.reducer
- 
+      [providerServiceApi.reducerPath]: providerServiceApi.reducer,
+      [chatApi.reducerPath]: chatApi.reducer,
     },
     middleware:(getDefaultMiddleware) => getDefaultMiddleware()
     .concat(
@@ -35,7 +36,8 @@ export const makeStore = () =>
       bidApi.middleware,
       questionApi.middleware,
       cancellationApi.middleware,
-      providerServiceApi.middleware
+      providerServiceApi.middleware,
+      chatApi.middleware
     ),
     devTools: process.env.NODE_ENV !== 'production',
   });

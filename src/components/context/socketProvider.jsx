@@ -24,7 +24,7 @@ export const SocketProvider = ({ children }) => {
   const accessToken = useSelector((state) => state.auth.accessToken);
 
   const socketUrl =
-    process.env.NEXT_PUBLIC_SOCKET_URL || "http://10.10.20.9:9000";
+    process.env.NEXT_PUBLIC_SOCKET_URL || "https://rnj64vmh-9000.inc1.devtunnels.ms";
 
   useEffect(() => {
  
@@ -38,9 +38,8 @@ export const SocketProvider = ({ children }) => {
 
     setSocketLoading(true);
 
-    // Initialize socket
-    const socket = io(socketUrl, {
-      auth: { token: accessToken },
+    // Initialize socket with token in URL query parameter
+    const socket = io(`${socketUrl}?token=${accessToken}`, {
       transports: ["websocket"],
       withCredentials: true,
     });
