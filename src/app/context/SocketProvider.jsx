@@ -41,8 +41,19 @@ export const SocketProvider = ({ children }) => {
     };
   }, []);
 
+const sendMessageSoket = (messageData) => {
+    if (!socket) return;
+    const res =  socket.emit("send-message", messageData);
+    return res;
+  };
+
+  const seenMessage = (messageData) => {
+    if (!socket) return;
+  console.log("Emitting seen-message:", messageData);
+    socket.emit("seen", messageData);
+  }
   return (
-    <SocketContext.Provider value={{ socket, isConnected }}>
+    <SocketContext.Provider value={{ socket, isConnected ,sendMessageSoket, seenMessage}}>
       {children}
     </SocketContext.Provider>
   );

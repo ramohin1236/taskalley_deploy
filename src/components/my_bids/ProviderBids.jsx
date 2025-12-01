@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { toast } from "sonner";
 import { useAcceptBidMutation } from '@/lib/features/bidApi/bidApi';
 import { useAuth } from '@/components/auth/useAuth';
+import { User } from 'lucide-react';
 
 
 const ProviderBids = ({ taskDetails, bidsData, questionsData,taskId }) => {

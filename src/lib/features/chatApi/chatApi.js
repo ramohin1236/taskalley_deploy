@@ -18,31 +18,26 @@ export const chatApi = createApi({
   }),
   tagTypes: ["Chat", "Message"],
   endpoints: (builder) => ({
-    
     getChatList: builder.query({
-      query: (params = {}) => {
-        const queryParams = new URLSearchParams(params);
+      query: () => {
         return {
-          url: `/conversation/get-chat-list?${queryParams.toString()}`,
+          url: `/conversation/get-chat-list`,
           method: "GET",
         };
       },
       providesTags: ["Chat"],
     }),
 
-    
     getMessages: builder.query({
-      query: (conversationId, params = {}) => {
-        const queryParams = new URLSearchParams(params);
+      query: (conversationId) => {
         return {
-          url: `/message/get-messages/${conversationId}?${queryParams.toString()}`,
+          url: `/message/get-messages/${conversationId}`,
           method: "GET",
         };
       },
       providesTags: ["Message"],
     }),
 
-   
     startConversation: builder.mutation({
       query: (conversationData) => ({
         url: "/conversation/start-conversation",
@@ -52,7 +47,6 @@ export const chatApi = createApi({
       invalidatesTags: ["Chat"],
     }),
 
-    
     markAsSeen: builder.mutation({
       query: (data) => ({
         url: "/message/mark-seen",

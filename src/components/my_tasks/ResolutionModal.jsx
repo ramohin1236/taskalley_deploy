@@ -7,7 +7,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import popularcateIcon from "../../../public/popularcate.svg";
 import { toast } from "sonner";
 import { useCreateCancellationRequestMutation } from "@/lib/features/cancelApi/cancellationApi";
-
+import { useCreateExtensionRequestMutation } from "@/lib/features/extensionApi/extensionApi";
 
 const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
   const [openModal, setOpenModal] = useState(null);
@@ -16,9 +16,15 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
   const [evidenceFile, setEvidenceFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
 
-  console.log("Resolution Modal - Task ID:", taskId);
+  // Date extension state
+  const [dateExtensionData, setDateExtensionData] = useState({
+    newDate: "",
+    newTime: "",
+    reason: "",
+  });
 
   const [createCancellationRequest, { isLoading: isCreatingCancellation }] = useCreateCancellationRequestMutation();
+  const [createExtensionRequest, { isLoading: isCreatingExtension }] = useCreateExtensionRequestMutation();
 
   const options = [
     {
@@ -33,22 +39,75 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
     },
   ];
 
-  const handleDateExtensionSubmit = (e) => {
+  const handleDateExtensionSubmit = async (e) => {
     e.preventDefault();
 
-    const dateValue = e.target.date.value;
-    const timeValue = e.target.time.value;
-    const reasonValue = e.target.reason.value;
+    // Validation
+    if (!dateExtensionData.newDate) {
+      toast.error("Please select a new date");
+      return;
+    }
 
-    const info = {
-      reason: reasonValue,
-      time: timeValue,
-      date: dateValue,
-    };
+    if (!dateExtensionData.reason.trim()) {
+      toast.error("Please provide a reason for extension");
+      return;
+    }
+
+    if (!taskId) {
+      toast.error("Task ID not found");
+      return;
+    }
+
+   
+    const requestedDateTime = new Date(`${dateExtensionData.newDate}T${dateExtensionData.newTime}:00`);
     
-    localStorage.setItem("extention", JSON.stringify(info));
-    toast.success("Date extension request submitted successfully!");
-    setOpenModal(null);
+    // Prepare the request body
+    const extensionRequest = {
+      task: taskId,
+      requestedDateTime: requestedDateTime.toISOString(),
+      reason: dateExtensionData.reason,
+    };
+
+    try {
+      const result = await createExtensionRequest(extensionRequest).unwrap();
+      console.log("extension request", result);
+      
+      if (result.success) {
+        toast.success("Date extension request created successfully!", {
+          style: {
+            backgroundColor: "#d1fae5",
+            color: "#065f46",
+            borderLeft: "6px solid #10b981",
+          }
+        });
+        
+        // Reset form and close modal
+        setDateExtensionData({
+          newDate: "",
+          newTime: "",
+          reason: "",
+        });
+        setOpenModal(null);
+      }
+    } catch (error) {
+      console.error("Failed to create extension request:", error);
+      
+      let errorMessage = "Failed to create extension request. Please try again.";
+      if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.error) {
+        errorMessage = error.error;
+      }
+      
+      toast.error(errorMessage, {
+        style: {
+          backgroundColor: "#fee2e2",
+          color: "#991b1b",
+          borderLeft: "6px solid #dc2626",
+        },
+        duration: 5000,
+      });
+    }
   };
 
   const handleCancellationSubmit = async (e) => {
@@ -123,6 +182,13 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
     }
   };
 
+  // Get tomorrow's date for minimum date
+  const getTomorrowDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
   return (
     <>
       {/* Main Resolution Modal */}
@@ -155,32 +221,6 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
               </p>
             </div>
           </div>
-
-          {/* Task Info */}
-          {/* <div className="bg-blue-50 rounded-lg p-3 md:p-4 mb-4 md:mb-6">
-            <h3 className="font-semibold text-blue-900 mb-2 text-sm md:text-base">Task Information</h3>
-            <div className="space-y-1 md:space-y-2">
-              <p className="text-blue-700 text-xs md:text-sm">
-                <strong>Task ID:</strong> {taskId || "Loading..."}
-              </p>
-              {taskDetails && (
-                <>
-                  <p className="text-blue-700 text-xs md:text-sm">
-                    <strong>Title:</strong> {taskDetails.title}
-                  </p>
-                  <p className="text-blue-700 text-xs md:text-sm">
-                    <strong>Due Date:</strong> {formatDate(taskDetails.preferredDate)}
-                  </p>
-                  <p className="text-blue-700 text-xs md:text-sm">
-                    <strong>Budget:</strong> ₦{parseInt(taskDetails.budget || 0).toLocaleString()}
-                  </p>
-                </>
-              )}
-            </div>
-            <p className="text-blue-600 text-xs mt-2">
-              Use this center to manage task disputes, cancellations, and date changes.
-            </p>
-          </div> */}
 
           {/* Options */}
           <div className="space-y-3 md:space-y-4">
@@ -247,19 +287,25 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
                     New Proposed Date *
                   </label>
                   <input
-                    name="date"
                     type="date"
+                    value={dateExtensionData.newDate}
+                    onChange={(e) => setDateExtensionData({...dateExtensionData, newDate: e.target.value})}
                     required
+                    min={getTomorrowDate()}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 md:py-3 text-sm focus:ring-2 focus:ring-[#115E59] focus:outline-none text-[#6B7280]"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must be a future date
+                  </p>
                 </div>
                 <div>
                   <label className="block text-gray-700 font-medium mb-1 text-sm md:text-base">
                     New Proposed Time *
                   </label>
                   <input
-                    name="time"
                     type="time"
+                    value={dateExtensionData.newTime}
+                    onChange={(e) => setDateExtensionData({...dateExtensionData, newTime: e.target.value})}
                     required
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 md:py-3 text-sm focus:ring-2 focus:ring-[#115E59] focus:outline-none"
                   />
@@ -271,7 +317,8 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
                   Reason for Request *
                 </label>
                 <textarea
-                  name="reason"
+                  value={dateExtensionData.reason}
+                  onChange={(e) => setDateExtensionData({...dateExtensionData, reason: e.target.value})}
                   rows={3}
                   required
                   placeholder="e.g., Need more time for quality work / Client requested delay"
@@ -282,16 +329,36 @@ const ResolutionModal = ({ taskId, taskDetails, onClose }) => {
               <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
                 <button
                   type="button"
-                  onClick={() => setOpenModal(null)}
+                  onClick={() => {
+                    setOpenModal(null);
+                    setDateExtensionData({
+                      newDate: "",
+                      newTime: "08:00",
+                      reason: "",
+                    });
+                  }}
                   className="w-full sm:w-auto px-4 py-2 md:px-6 md:py-2.5 rounded-lg border border-[#115E59] text-[#115E59] font-medium cursor-pointer hover:bg-emerald-50 text-sm md:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-4 py-2 md:px-6 md:py-2.5 rounded-lg bg-[#1b867f] text-white font-medium hover:bg-[#115E59] cursor-pointer text-sm md:text-base"
+                  disabled={isCreatingExtension || !dateExtensionData.newDate || !dateExtensionData.reason.trim()}
+                  className={`w-full sm:w-auto px-4 py-2 md:px-6 md:py-2.5 rounded-lg font-medium cursor-pointer text-sm md:text-base ${
+                    isCreatingExtension || !dateExtensionData.newDate || !dateExtensionData.reason.trim()
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#1b867f] hover:bg-[#115E59] text-white"
+                  }`}
                 >
-                  Submit Request
+                  {isCreatingExtension ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Creating...
+                    </span>
+                  ) : "Submit Request"}
                 </button>
               </div>
             </form>

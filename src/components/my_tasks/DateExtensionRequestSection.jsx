@@ -10,6 +10,7 @@ import client from "../../../public/client.png";
 import Image from "next/image";
 
 const DateExtensionRequestSection = ({ extensionStatus }) => {
+  console.log("extentionstatus",extensionStatus)
   const getExtensionContent = () => {
     if (!extensionStatus) return null;
 

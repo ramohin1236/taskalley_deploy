@@ -264,22 +264,6 @@ const TaskDetails = () => {
             </div>
           )}
 
-          {/* Status Section Header */}
-          {/* <div className="p-6 lg:p-8 border-b border-gray-100 bg-gray-50/50">
-            <div className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${statusConfig.badgeColor} animate-pulse`}></div>
-              <h2 className="text-xl font-bold text-gray-900">
-                Current Status: {statusConfig.text}
-              </h2>
-            </div>
-            <p className="text-gray-600 mt-2 text-sm">
-              {currentStatus === "Bids" && "Review bids from service providers and assign the task."}
-              {currentStatus === "Progress" && "Track the progress of your ongoing task."}
-              {currentStatus === "Completed" && "View details of your completed task."}
-              {currentStatus === "Cancelled" && "This task has been cancelled."}
-            </p>
-          </div> */}
-
           {/* Dynamic Content Section */}
           <div className="p-6 lg:p-8">
             <div className="min-h-[400px]">

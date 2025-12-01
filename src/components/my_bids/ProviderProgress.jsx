@@ -7,7 +7,6 @@ import DateExtensionRequestSection from "../my_tasks/DateExtensionRequestSection
 import PricingSection from "../my_tasks/PricingSection";
 import ProgressBarComponent from "../my_tasks/ProgressBarComponent";
 import TaskDetailsSection from "../my_tasks/TaskDetailsSection";
-import TaskInfoSection from "../my_tasks/TaskInfoSection";
 import ProviderTaskInfo from "./ProviderTaskInfo";
 
 const ProviderProgress = ({
