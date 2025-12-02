@@ -25,6 +25,8 @@ const ChatContent = ({ userId }) => {
   const { user } = useAuth();
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const scrollPositionRef = useRef(0);
 
   const {
     data: messageData,
@@ -38,11 +40,55 @@ const ChatContent = ({ userId }) => {
   const messageDataResult = messageData || [];
   const conversationId = messageDataResult[0]?.conversationId;
 
-  const { sendMessageSoket, seenMessage } = useSocketContext();
+  const { sendMessageSoket, seenMessage, onMessageReceivedForUser } = useSocketContext();
+  const [isUserSending, setIsUserSending] = useState(false);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Save scroll position before refetch
+  const saveScrollPosition = () => {
+    if (messagesContainerRef.current) {
+      scrollPositionRef.current = messagesContainerRef.current.scrollTop;
+    }
+  };
+
+  // Restore scroll position after refetch
+  const restoreScrollPosition = () => {
+    if (messagesContainerRef.current) {
+      setTimeout(() => {
+        messagesContainerRef.current.scrollTop = scrollPositionRef.current;
+      }, 0);
+    }
+  };
+
+  // Auto-refetch every 1 second for real-time updates
   useEffect(() => {
-    scrollToBottom();
+    if (!receiverId) return;
+
+    const interval = setInterval(() => {
+      saveScrollPosition();
+      refetch();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [receiverId, refetch]);
+
+  // Also listen for socket notifications and refetch faster when notified
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const unsubscribe = onMessageReceivedForUser(user.id, (data) => {
+      console.log("New message notification received:", data);
+      saveScrollPosition();
+      refetch();
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [user?.id, refetch]);
+
+  // Restore scroll position when messages change
+  useEffect(() => {
+    restoreScrollPosition();
   }, [messageDataResult]);
 
   // Mark messages as seen when chat is opened
@@ -186,6 +232,8 @@ const ChatContent = ({ userId }) => {
     return;
   }
 
+  setIsUserSending(true);
+
   let uploadedData = { images: [], videos: [], pdfs: [] };
   if (Object.values(selectedFiles).some(file => file !== null)) {
     uploadedData = await uploadFiles();
@@ -195,6 +243,7 @@ const ChatContent = ({ userId }) => {
     const totalUploaded = uploadedData.images.length + uploadedData.videos.length + uploadedData.pdfs.length;
     if (totalUploaded === 0 && !message.trim()) {
       toast.error("No files uploaded successfully");
+      setIsUserSending(false);
       return;
     }
   }
@@ -210,27 +259,36 @@ const ChatContent = ({ userId }) => {
   console.log("Final message data to send:", data);
 
   try {
-    await sendMessageSoket(data);
-    // Refetch messages
-    setTimeout(() => refetch(), 100);
-    
-    // Mark as seen
-    if (conversationId && user?.id) {
-      await seenMessage({
-        conversationId,
-        msgByUserId: user.id,
-      });
-    }
+   const res = await sendMessageSoket(data);
+   console.log("resss",res)
     
     setMessage("");
     setSelectedFiles({ image: null, video: null, pdfs: null });
     
+    // Refetch multiple times to ensure message is captured (accounts for API delay)
+    // Save scroll position before refetching
     setTimeout(() => {
-      document.querySelector('input[type="text"]')?.focus();
-    }, 50);
+      saveScrollPosition();
+      refetch();
+    }, 200);
+    setTimeout(() => {
+      saveScrollPosition();
+      refetch();
+    }, 500);
+    setTimeout(() => {
+      saveScrollPosition();
+      refetch();
+      setIsUserSending(false);
+      // Focus back to message input after refetch completes
+      setTimeout(() => {
+        const messageInput = document.querySelector('input[placeholder="Type a message..."]');
+        if (messageInput) messageInput.focus();
+      }, 50);
+    }, 800);
   } catch (error) {
     toast.error("Failed to send message");
     console.error("Send message error:", error);
+    setIsUserSending(false);
   }
 };
 
@@ -309,11 +367,21 @@ const ChatContent = ({ userId }) => {
       >
         {!isMyMessage && (
           <div className="flex items-start gap-2 max-w-[80%]">
-            <img
-              src={userDetails?.profile_image || "https://randomuser.me/api/portraits/men/1.jpg"}
-              alt={userDetails?.name}
-              className="w-8 h-8 rounded-full flex-shrink-0"
-            />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-gray-200 flex-shrink-0">
+              {userDetails?.profile_image && userDetails?.profile_image.trim() !== "" ? (
+                <img
+                  src={userDetails?.profile_image}
+                  alt={userDetails?.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <img
+                  src="/taskalley.svg"
+                  alt="TaskAlley Logo"
+                  className="w-5 h-5"
+                />
+              )}
+            </div>
             <div className="flex flex-col">
               <div className="bg-gray-100 px-4 py-2 rounded-2xl rounded-tl-none">
                 <p className="text-gray-800">{msg.text}</p>
@@ -384,19 +452,34 @@ const ChatContent = ({ userId }) => {
   }
 
   const groupedMessages = groupMessagesByDate();
+  
+  // Get receiver user info from messages
+  const receiverUserInfo = messageDataResult.find(msg => !msg.isMyMessage)?.userDetails || 
+                          messageDataResult.find(msg => msg.isMyMessage)?.userData || 
+                          { name: "User", profile_image: "" };
 
   return (
     <div className="flex flex-col h-[750px] max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
       {/* Chat Header */}
       <div className="p-4 border-b bg-gray-50 rounded-t-lg">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-            <span className="font-semibold text-green-600">
-              {receiverId?.charAt(0)?.toUpperCase() || "U"}
-            </span>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center overflow-hidden bg-gray-100">
+            {receiverUserInfo?.profile_image && receiverUserInfo?.profile_image.trim() !== "" ? (
+              <img
+                src={receiverUserInfo?.profile_image}
+                alt={receiverUserInfo?.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <img
+                src="/taskalley.svg"
+                alt="TaskAlley Logo"
+                className="w-6 h-6"
+              />
+            )}
           </div>
           <div>
-            <h2 className="font-semibold text-gray-800">Chat</h2>
+            <h2 className="font-semibold text-gray-800">{receiverUserInfo?.name || "User"}</h2>
             <p className="text-sm text-gray-500">
               {messageDataResult.length} messages
             </p>
@@ -406,6 +489,7 @@ const ChatContent = ({ userId }) => {
 
       {/* Messages Container */}
       <div
+        ref={messagesContainerRef}
         className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-50 to-white"
       >
         {Object.keys(groupedMessages).length === 0 ? (
@@ -482,7 +566,6 @@ const ChatContent = ({ userId }) => {
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             className="flex-1 px-4 py-3 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:bg-white transition-all"
-            autoFocus
             disabled={uploading}
           />
           

@@ -23,7 +23,7 @@ export const useSocket = () => {
     }
 
     // Create socket instance
-    socketRef.current = io("http://10.10.20.9:9000", {
+    socketRef.current = io("https://rnj64vmh-9000.inc1.devtunnels.ms", {
       auth: { token: accessToken },
       transports: ["websocket"],
       autoConnect: true,
