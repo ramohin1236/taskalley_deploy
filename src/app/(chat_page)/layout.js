@@ -1,4 +1,3 @@
-// app/chat_page/layout.js
 "use client";
 import React, { useState } from "react";
 import "../globals.css";
@@ -6,12 +5,14 @@ import ChatSideNav from "@/components/chat/ChatSideNav";
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import { Menu, X } from "lucide-react";
+import { Toaster } from "sonner";
 
 const ChatLayout = ({ children }) => {
   const [open, setOpen] = useState(false);
 
   return (
       <div className="min-h-screen bg-gray-50">
+         <Toaster position="top-right" richColors />
         <div className="mb-8">
           <Navbar />
         </div>

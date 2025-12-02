@@ -43,9 +43,21 @@ export const SocketProvider = ({ children }) => {
 
 const sendMessageSoket = (messageData) => {
     if (!socket) return;
+    console.log(messageData)
     const res =  socket.emit("send-message", messageData);
     return res;
   };
+
+ const getMessage = (userId) => {
+  return new Promise((resolve) => {
+    if (!socket) return resolve(null);
+
+    socket.once(`message-${userId}`, (data) => {
+      console.log("Message received:", data);
+      resolve(data);
+    });
+  });
+};
 
   const seenMessage = (messageData) => {
     if (!socket) return;
@@ -53,7 +65,7 @@ const sendMessageSoket = (messageData) => {
     socket.emit("seen", messageData);
   }
   return (
-    <SocketContext.Provider value={{ socket, isConnected ,sendMessageSoket, seenMessage}}>
+    <SocketContext.Provider value={{ socket, isConnected ,sendMessageSoket, seenMessage,getMessage}}>
       {children}
     </SocketContext.Provider>
   );

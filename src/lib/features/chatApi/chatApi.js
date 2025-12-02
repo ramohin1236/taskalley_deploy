@@ -29,11 +29,15 @@ export const chatApi = createApi({
     }),
 
     getMessages: builder.query({
-      query: (conversationId) => {
+      query: ({ userId, limit }) => {
         return {
-          url: `/message/get-messages/${conversationId}`,
+          url: `/message/get-messages/${userId}`,
           method: "GET",
+          params: { limit },
         };
+      },
+      transformResponse: (response) => {
+        return response?.data?.result?.reverse();
       },
       providesTags: ["Message"],
     }),

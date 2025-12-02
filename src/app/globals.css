@@ -293,7 +293,11 @@ background: linear-gradient(90deg, rgba(133, 172, 170, 1) 0%, rgba(155, 188, 186
 }
 
 
-
+.PhoneInputInput{
+   border: none !important;
+   outline: none !important;
+  /* :focus { outline: none !important; box-shadow: none !important; } */
+}
 
 @layer base {
   * {

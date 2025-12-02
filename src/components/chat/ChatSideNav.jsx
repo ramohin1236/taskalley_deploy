@@ -5,50 +5,24 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaHome } from "react-icons/fa";
 import Link from "next/link";
+import { useGetChatListQuery } from "@/lib/features/chatApi/chatApi";
+import { useSocketContext } from "@/app/context/SocketProvider";
 
 const ChatSideNav = ({ onMobileItemClick }) => {
   const router = useRouter();
-  
-  const chatUsers = [
-    {
-      id: 1,
-      Name: "Lee Williamson",
-      short_message: "Hey, are you available for a quick call?",
-      image: "https://i.pravatar.cc/150?img=1",
-      email: "lee.williamson@example.com",
-      location: "New York, United States"
-    },
-    {
-      id: 2,
-      Name: "Eleanor Pena",
-      short_message: "Yes, that's gonna work, hopefully.",
-      image: "https://i.pravatar.cc/150?img=2",
-      email: "eleanor.pena@example.com",
-      location: "Los Angeles, United States"
-    },
-    {
-      id: 3,
-      Name: "Jacob Jones",
-      short_message: "I'll send you the files by tonight.",
-      image: "https://i.pravatar.cc/150?img=3",
-      email: "jacob.jones@example.com",
-      location: "Chicago, United States"
-    },
-    {
-      id: 4,
-      Name: "Theresa Webb",
-      short_message: "Can we move the meeting to tomorrow?",
-      image: "https://i.pravatar.cc/150?img=4",
-      email: "theresa.webb@example.com",
-      location: "Miami, United States"
-    }
-  ];
+  const {data: chatUsers,refetch}= useGetChatListQuery();
+ 
+    const {seenMessage} = useSocketContext();
+
 
   const handleUserClick = (user) => {
-    // URL-এ user ID সহ navigate করুন
-    router.push(`/chat/${user.id}`);
-    
-    // Mobile view হলে sidebar বন্ধ করুন
+    const data = {
+    conversationId:user?.lastMessage?.conversationId,
+    msgByUserId:user?.lastMessage?.msgByUserId
+    }
+  seenMessage(data)
+  refetch();
+    router.push(`/chat/${user?.userData?._id}`);
     if (onMobileItemClick) {
       onMobileItemClick();
     }
@@ -83,23 +57,25 @@ const ChatSideNav = ({ onMobileItemClick }) => {
 
         {/* Scrollable Chat List Container */}
         <div className="w-full max-h-[calc(100vh-280px)] lg:max-h-[650px] overflow-y-auto px-2">
-          {chatUsers.map((user) => (
+          {chatUsers?.data?.data.map((user) => (
             <div
-              key={user.id}
+              key={user?._id}
               onClick={() => handleUserClick(user)}
-              className="flex items-center gap-3 p-4 hover:bg-[#E6F4F1] cursor-pointer rounded-2xl transition-colors"
+              className={`flex items-center gap-3 p-4 hover:bg-[#E6F4F1] cursor-pointer rounded-2xl transition-colors ${!user?.lastMessage?.seen  ? "bg-green-50" : "bg-green-100 font-semibold"}`}
             >
-              <div className="w-12 h-12 lg:w-16 lg:h-16 overflow-clip">
-                <img
-                  src={user.image}
-                  className="rounded-full w-full h-full object-cover"
-                  alt={user.Name}
-                />
+              <div className="w-12 h-12 lg:w-16 lg:h-16 overflow-clip flex items-center justify-center">
+                <div className="avatar">
+                <div className="w-12 rounded-full">
+                  <img src={user?.userData?.profile_image === "" ?  "https://randomuser.me/api/portraits/women/45.jpg" : user?.userData?.profile_image} />
+                </div>
+               
+              </div>
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-base lg:text-xl font-semibold truncate">{user.Name}</p>
-                <p className="text-xs lg:text-sm text-gray-500 truncate">{user.short_message}</p>
+                 {user?.unseenMsg > 0 && <div className="badge bg-[#115E59] w-6 h-6 rounded-full text-white p-2 badge-sm float-end">{user?.unseenMsg}</div>}
+                <p className="text-sm lg:text-base font-semibold truncate line-clamp-1">{user?.userData?.name}</p>
+                <p className="text-xs lg:text-sm text-gray-500 truncate line-clamp-1">{user?.lastMessage?.text}</p>
               </div>
             </div>
           ))}
