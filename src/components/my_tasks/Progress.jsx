@@ -150,7 +150,7 @@ const Progress = ({
       {isCompleted && (
         <div className="flex justify-start">
           <div className="px-6 py-2.5 bg-green-100 text-green-800 rounded-md font-medium">
-            ✓ Task Completed
+             Task Completed
           </div>
         </div>
       )}

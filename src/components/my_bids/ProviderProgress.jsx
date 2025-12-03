@@ -1,5 +1,4 @@
 import React from "react";
-
 import { useCompleteTaskMutation } from "@/lib/features/task/taskApi";
 import { toast } from "sonner";
 import CancellationStatusComponent from "../my_tasks/CancellationStatusComponent";
@@ -108,6 +107,12 @@ const ProviderProgress = ({
     }
   };
 
+  const handleCancellationRequest = () => {
+    toast.info("Cancellation request functionality will be implemented soon");
+    // Add your cancellation request logic here
+    console.log("Cancellation requested for task:", taskId);
+  };
+
   return (
     <div className="flex flex-col gap-12">
       <ProviderTaskInfo
@@ -134,7 +139,7 @@ const ProviderProgress = ({
       </div>
 
       {!isCompleted && (
-        <div className="flex justify-start">
+        <div className="flex flex-wrap gap-3 justify-start">
           <button
             onClick={handleMarkAsComplete}
             disabled={isCompleting}
@@ -146,13 +151,20 @@ const ProviderProgress = ({
           >
             {isCompleting ? "Marking Complete..." : "Mark As Complete"}
           </button>
+          
+          <button
+            onClick={handleCancellationRequest}
+            className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors font-medium cursor-pointer"
+          >
+            Cancellation Request
+          </button>
         </div>
       )}
 
       {isCompleted && (
         <div className="flex justify-start">
           <div className="px-6 py-2.5 bg-green-100 text-green-800 rounded-md font-medium">
-            ✓ Task Completed
+             Task Completed
           </div>
         </div>
       )}
