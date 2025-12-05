@@ -37,28 +37,40 @@ const cancellationApi = createApi({
           body: formData,
         };
       },
-      invalidatesTags: ["Cancellation"],
+      invalidatesTags: (result, error, cancellationData) => [
+        "Cancellation",
+        { type: "Cancellation", id: cancellationData.taskId }
+      ],
     }),
     getCancellationRequestByTask: builder.query({
       query: (taskId) => ({
         url: `/cancel-request/byTask/${taskId}`,
         method: "GET",
       }),
-      providesTags: ["Cancellation"],
+      providesTags: (result, error, taskId) => [
+        "Cancellation",
+        { type: "Cancellation", id: taskId }
+      ],
     }),
     deleteCancellationRequest: builder.mutation({
       query: (id) => ({
-        url: `/cancel-request/${id}`,
+        url: `/cancel-request/delete/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Cancellation"],
+      invalidatesTags: (result, error, id) => [
+        "Cancellation",
+        { type: "Cancellation", id: "LIST" }
+      ],
     }),
     acceptCancellationRequest: builder.mutation({
       query: (id) => ({
         url: `/cancel-request/${id}/accept`,
         method: "PATCH",
       }),
-      invalidatesTags: ["Cancellation"],
+      invalidatesTags: (result, error, id) => [
+        "Cancellation",
+        { type: "Cancellation", id: "LIST" }
+      ],
     }),
     rejectCancellationRequest: builder.mutation({
       query: ({ id, reason, evidence }) => {
@@ -73,7 +85,10 @@ const cancellationApi = createApi({
           body: formData,
         };
       },
-      invalidatesTags: ["Cancellation"],
+      invalidatesTags: (result, error, args) => [
+        "Cancellation",
+        { type: "Cancellation", id: "LIST" }
+      ],
     }),
   }),
 });
