@@ -75,14 +75,17 @@ const cancellationApi = createApi({
     rejectCancellationRequest: builder.mutation({
       query: ({ id, reason, evidence }) => {
         const formData = new FormData();
-        formData.append('data', JSON.stringify({ reason }));
+        formData.append('data', JSON.stringify({
+          status: "REJECTED",
+          rejectDetails: reason
+        }));
         if (evidence && evidence.length > 0) {
           Array.from(evidence).forEach((file) => {
             formData.append('reject_evidence', file);
           });
         }
         return {
-          url: `/cancel-request/${id}/reject`,
+          url: `/cancel-request/accept-reject/${id}`,
           method: "PATCH",
           body: formData,
         };
