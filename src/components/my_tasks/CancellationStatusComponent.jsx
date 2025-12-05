@@ -99,6 +99,10 @@ const ActionButton = ({ onClick, variant = "primary", children, className = "" }
 const CancellationStatusComponent = ({ taskId, isServiceProvider = false }) => {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectEvidence, setRejectEvidence] = useState(null);
+  const [isSubmittingReject, setIsSubmittingReject] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
   // API Hooks
@@ -346,7 +350,7 @@ const CancellationStatusComponent = ({ taskId, isServiceProvider = false }) => {
             <ActionButton onClick={() => handleAction("accept")} variant="accept">
               Accept Request
             </ActionButton>
-            <ActionButton onClick={() => handleAction("reject")} variant="reject">
+            <ActionButton onClick={() => setShowRejectModal(true)} variant="reject">
               Reject Request
             </ActionButton>
           </>
@@ -433,6 +437,88 @@ const CancellationStatusComponent = ({ taskId, isServiceProvider = false }) => {
                 <Download className="w-4 h-4 mr-2" />
                 Download Image
               </ActionButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Modal */}
+      {showRejectModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/60 p-4">
+          <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Reject Cancellation Request</h3>
+              <button onClick={() => setShowRejectModal(false)} className="text-gray-500 hover:text-gray-700">Close</button>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Please explain why you are rejecting this cancellation request."
+                className="w-full p-4 border rounded-lg h-28 resize-none"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Evidence (Optional)</label>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center justify-center w-28 h-28 border rounded-md bg-gray-50 cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*,.pdf,.doc,.docx"
+                    className="hidden"
+                    onChange={(e) => setRejectEvidence(e.target.files?.[0] || null)}
+                  />
+                  <div className="text-center text-sm text-gray-500">
+                    <div className="mb-1">Upload Document</div>
+                    <div className="text-xs">PNG, JPG, PDF</div>
+                  </div>
+                </label>
+                {rejectEvidence && (
+                  <div className="text-sm text-gray-600">{rejectEvidence.name}</div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setShowRejectModal(false)}
+                className="px-6 py-2.5 bg-gray-100 text-gray-800 rounded-md"
+                disabled={isSubmittingReject}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!rejectReason.trim()) {
+                    toast.error('Please provide a reason for rejection');
+                    return;
+                  }
+                  setIsSubmittingReject(true);
+                  try {
+                    await rejectCancellationRequest({ id: cancellationRequest._id, reason: rejectReason, evidence: rejectEvidence }).unwrap();
+                    toast.success('Cancellation request rejected successfully');
+                    setShowRejectModal(false);
+                    // refetch to sync views
+                    setTimeout(() => { try { refetch(); } catch (e) {} }, 400);
+                  } catch (err) {
+                    console.error('Reject failed', err);
+                    toast.error(err?.data?.message || 'Failed to reject request');
+                  } finally {
+                    setIsSubmittingReject(false);
+                    setRejectReason('');
+                    setRejectEvidence(null);
+                  }
+                }}
+                className="px-6 py-2.5 bg-[#115E59] text-white rounded-md"
+                disabled={isSubmittingReject}
+              >
+                {isSubmittingReject ? 'Submitting...' : 'Submit'}
+              </button>
             </div>
           </div>
         </div>
