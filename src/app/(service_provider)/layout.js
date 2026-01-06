@@ -5,6 +5,7 @@ import "../globals.css";
 import Footer from "@/components/ui/Footer";
 import Navbar from "@/components/ui/Navbar";
 import ProviderProtectedRoute from "@/components/auth/ProviderProtectedRoute";
+import VerificationGuard from "@/components/auth/VerificationGuard";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -19,17 +20,18 @@ const geistMono = Geist_Mono({
 
 export default function RootLayout({ children }) {
   return (
- 
+
     <ProviderProtectedRoute>
-      <Navbar />
-      <div className="">{children}</div>
-      <Footer />
-      <Toaster 
-        position="top-right"
-        expand={true}
-        richColors
-       
-      />
+      <VerificationGuard>
+        <Navbar />
+        <div className="">{children}</div>
+        <Footer />
+        <Toaster
+          position="top-right"
+          expand={true}
+          richColors
+        />
+      </VerificationGuard>
     </ProviderProtectedRoute>
   );
 }
