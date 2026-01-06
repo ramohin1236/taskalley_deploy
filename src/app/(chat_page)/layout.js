@@ -6,17 +6,19 @@ import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
 import { Menu, X } from "lucide-react";
 import { Toaster } from "sonner";
+import VerificationGuard from "@/components/auth/VerificationGuard";
 
 const ChatLayout = ({ children }) => {
   const [open, setOpen] = useState(false);
 
   return (
+    <VerificationGuard>
       <div className="min-h-screen bg-gray-50">
-         <Toaster position="top-right" richColors />
+        <Toaster position="top-right" richColors />
         <div className="mb-8">
           <Navbar />
         </div>
-        
+
         {/* Mobile Menu Button */}
         <button
           className="md:hidden fixed top-24 left-6 z-50 p-2 rounded-lg bg-[#00786f] shadow-lg"
@@ -57,6 +59,7 @@ const ChatLayout = ({ children }) => {
           <Footer />
         </div>
       </div>
+    </VerificationGuard>
   );
 };
 
